@@ -8,6 +8,7 @@ wheels/
 .env
 index.html
 logs/**
+trash/**
 
 # Virtual environments
 .venv

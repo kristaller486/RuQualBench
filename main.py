@@ -227,6 +227,77 @@ async def judge_dialog_answer(answer_result: Dict[str, Any],
             "explanation_additional_mistakes": []
         }
 
+async def judge_only_async(answer_results: List[Dict[str, Any]], 
+                          judge_model_name: str = None,
+                          run_number: int = None) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Оценивает готовые ответы судьей без генерации"""
+    
+    judge_model = judge_model_name or os.getenv("JUDGE_MODEL_NAME")
+    judge_api_base = os.getenv("JUDGE_MODEL_BASE_URL")
+    judge_api_key = os.getenv("JUDGE_MODEL_API_KEY")
+    judge_max_workers = int(os.getenv("JUDGE_MODEL_MAX_WORKERS", "10"))
+    
+    judge_extra_body_str = os.getenv("JUDGE_MODEL_EXTRA_BODY")
+    judge_extra_body = json.loads(judge_extra_body_str) if judge_extra_body_str else None
+    
+    max_retries = int(os.getenv("MAX_RETRIES", "3"))
+    retry_delay = float(os.getenv("RETRY_DELAY", "1.0"))
+    
+    run_prefix = f"Прогон {run_number}: " if run_number is not None else ""
+    
+    logger.info(f"{run_prefix}Модель-оценщик: {judge_model} (max_workers={judge_max_workers})")
+    if judge_extra_body:
+        logger.info(f"{run_prefix}Judge extra body: {judge_extra_body}")
+    
+    judge_semaphore = asyncio.Semaphore(judge_max_workers)
+    
+    logger.info(f"{run_prefix}Оценка ответов судьей (без генерации)")
+    judging_tasks = [
+        judge_dialog_answer(
+            answer_result,
+            judge_model, judge_api_base, judge_api_key,
+            judge_semaphore,
+            max_retries, retry_delay, judge_extra_body
+        )
+        for answer_result in answer_results
+    ]
+    
+    results = []
+    for coro in atqdm.as_completed(judging_tasks, desc="Оценка ответов", total=len(judging_tasks)):
+        result = await coro
+        results.append(result)
+    
+    results.sort(key=lambda x: x["dialog_id"])
+    
+    valid_results = [r for r in results if r["error"] is None]
+    total_critical_mistakes = sum(r["critical_mistakes"] for r in valid_results)
+    total_mistakes = sum(r["mistakes"] for r in valid_results)
+    total_additional_mistakes = sum(r["additional_mistakes"] for r in valid_results)
+    total_all_mistakes = total_critical_mistakes + total_mistakes + total_additional_mistakes
+    total_tokens = sum(r["tokens"] for r in valid_results)
+    
+    critical_mistakes_per_1000 = (total_critical_mistakes / total_tokens * 1000) if total_tokens > 0 else 0
+    mistakes_per_1000 = (total_mistakes / total_tokens * 1000) if total_tokens > 0 else 0
+    additional_mistakes_per_1000 = (total_additional_mistakes / total_tokens * 1000) if total_tokens > 0 else 0
+    all_mistakes_per_1000 = (total_all_mistakes / total_tokens * 1000) if total_tokens > 0 else 0
+    
+    summary = {
+        "total_critical_mistakes": total_critical_mistakes,
+        "total_mistakes": total_mistakes,
+        "total_additional_mistakes": total_additional_mistakes,
+        "total_all_mistakes": total_all_mistakes,
+        "total_tokens": total_tokens,
+        "critical_mistakes_per_1000_tokens": round(critical_mistakes_per_1000, 2),
+        "mistakes_per_1000_tokens": round(mistakes_per_1000, 2),
+        "additional_mistakes_per_1000_tokens": round(additional_mistakes_per_1000, 2),
+        "all_mistakes_per_1000_tokens": round(all_mistakes_per_1000, 2),
+        "total_dialogs": len(answer_results),
+        "successful_dialogs": len(valid_results),
+        "failed_dialogs": len(answer_results) - len(valid_results)
+    }
+    
+    return results, summary
+
 async def run_benchmark_async(dataset_name: str, model_name: str = None, judge_model_name: str = None, 
                              extra_body: dict = None, run_number: int = None) -> Tuple[List[Dict[str, Any]], Dict[str, Any], Dict[str, Any]]:
     """Запускает бенчмарк асинхронно и возвращает результаты"""
@@ -360,20 +431,22 @@ def find_existing_runs(timestamp: str, dataset: str) -> tuple:
     
     max_run = max(run_numbers)
     
-    # Читаем config из первого прогона
+    # Читаем config и results из первого прогона
     first_run_file = logs_dir / f"benchmark_{timestamp}_run_1_{dataset}.json"
     with open(first_run_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
         config = data.get("config", {})
+        results = data.get("results", [])
     
     logger.info(f"Найдено {len(run_numbers)} существующих прогонов (максимальный: run_{max_run})")
     
-    return max_run, config
+    return max_run, config, results
 
 async def run_multiple_benchmarks_async(dataset_name: str, num_runs: int, model_name: str = None,
                                        judge_model_name: str = None, extra_body: dict = None, 
                                        verbose_name: str = None, continue_timestamp: str = None,
-                                       start_run_number: int = 0):
+                                       start_run_number: int = 0, no_regenerate: bool = False,
+                                       existing_answer_results: List[Dict[str, Any]] = None):
     """Запускает бенчмарк несколько раз и вычисляет статистику"""
     
     logs_dir = Path("logs")
@@ -389,6 +462,7 @@ async def run_multiple_benchmarks_async(dataset_name: str, num_runs: int, model_
         end_num = num_runs
     
     all_summaries = []
+    shared_answer_results = None
     
     logger.info("="*70)
     if continue_timestamp:
@@ -396,17 +470,81 @@ async def run_multiple_benchmarks_async(dataset_name: str, num_runs: int, model_
         logger.info(f"Timestamp: {continue_timestamp}")
     else:
         logger.info(f"ЗАПУСК МНОЖЕСТВЕННЫХ ПРОГОНОВ (N={num_runs})")
+    
+    if no_regenerate:
+        logger.info(f"РЕЖИМ: --no-regenerate (генерация ответов один раз, оценка судьей {num_runs} раз)")
     logger.info("="*70)
+    
+    # Если no_regenerate и есть готовые ответы (из --continue), используем их
+    if no_regenerate and existing_answer_results:
+        logger.info("Используются ответы из run_1 существующей серии")
+        shared_answer_results = existing_answer_results
+    # Если no_regenerate но нет готовых ответов, генерируем один раз перед циклом
+    elif no_regenerate and not existing_answer_results:
+        logger.info("")
+        logger.info("="*70)
+        logger.info("ГЕНЕРАЦИЯ ОТВЕТОВ (один раз для всех прогонов)")
+        logger.info("="*70)
+        
+        results, summary, config = await run_benchmark_async(
+            dataset_name, model_name, judge_model_name, extra_body, run_number=None
+        )
+        
+        # Извлекаем только ответы без оценок судьи
+        shared_answer_results = [
+            {
+                "dialog_id": r["dialog_id"],
+                "dialog": r["dialog"],
+                "answer": r["answer"],
+                "tokens": r["tokens"],
+                "error": r["error"]
+            }
+            for r in results
+        ]
+        
+        logger.info(f"Сгенерировано {len(shared_answer_results)} ответов")
     
     for run_num in range(start_num, end_num + 1):
         logger.info("")
         logger.info(f"{'='*70}")
-        logger.info(f"ПРОГОН {run_num}/{num_runs}")
+        logger.info(f"ПРОГОН {run_num}/{end_num}")
         logger.info(f"{'='*70}")
         
-        results, summary, config = await run_benchmark_async(
-            dataset_name, model_name, judge_model_name, extra_body, run_number=run_num
-        )
+        # Если no_regenerate, используем готовые ответы и только оцениваем судьей
+        if no_regenerate and shared_answer_results:
+            results, summary = await judge_only_async(
+                shared_answer_results, judge_model_name, run_number=run_num
+            )
+            
+            # Получаем config из первой генерации или из существующих логов
+            if existing_answer_results:
+                # При --continue берем config из существующих логов
+                first_run_file = logs_dir / f"benchmark_{base_timestamp}_run_1_{dataset_name}.json"
+                with open(first_run_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    config = data.get("config", {})
+                    # Убираем поля специфичные для конкретного прогона
+                    config = {k: v for k, v in config.items() if k not in ['timestamp', 'run_number', 'total_runs']}
+            else:
+                # При первом запуске создаем config
+                test_model = model_name or os.getenv("TEST_MODEL_NAME")
+                judge_model = judge_model_name or os.getenv("JUDGE_MODEL_NAME")
+                test_max_workers = int(os.getenv("TEST_MODEL_MAX_WORKERS", "10"))
+                judge_max_workers = int(os.getenv("JUDGE_MODEL_MAX_WORKERS", "10"))
+                
+                config = {
+                    "dataset": dataset_name,
+                    "model": test_model,
+                    "judge_model": judge_model,
+                    "test_max_workers": test_max_workers,
+                    "judge_max_workers": judge_max_workers,
+                    "no_regenerate": True
+                }
+        else:
+            # Обычный режим: генерация + оценка
+            results, summary, config = await run_benchmark_async(
+                dataset_name, model_name, judge_model_name, extra_body, run_number=run_num
+            )
         
         all_summaries.append(summary)
         
@@ -417,7 +555,7 @@ async def run_multiple_benchmarks_async(dataset_name: str, num_runs: int, model_
                 **config,
                 "timestamp": base_timestamp,
                 "run_number": run_num,
-                "total_runs": num_runs
+                "total_runs": end_num
             },
             "results": results,
             "summary": summary
@@ -468,10 +606,12 @@ async def run_multiple_benchmarks_async(dataset_name: str, num_runs: int, model_
 
 def run_benchmark(dataset_name: str, num_runs: int = 1, model_name: str = None, 
                  judge_model_name: str = None, extra_body: dict = None, verbose_name: str = None,
-                 continue_timestamp: str = None, start_run_number: int = 0):
+                 continue_timestamp: str = None, start_run_number: int = 0, no_regenerate: bool = False,
+                 existing_answer_results: List[Dict[str, Any]] = None):
     """Обертка для запуска бенчмарка (одного или нескольких прогонов)"""
     asyncio.run(run_multiple_benchmarks_async(dataset_name, num_runs, model_name, judge_model_name, 
-                                              extra_body, verbose_name, continue_timestamp, start_run_number))
+                                              extra_body, verbose_name, continue_timestamp, start_run_number,
+                                              no_regenerate, existing_answer_results))
 
 def main():
     parser = argparse.ArgumentParser(description="RuQualBench - бенчмарк качества русского языка")
@@ -514,6 +654,11 @@ def main():
         dest="continue_timestamp",
         help="Продолжить существующую серию прогонов (указать timestamp, например: 2025-10-17_15-17-05)"
     )
+    parser.add_argument(
+        "--no-regenerate",
+        action="store_true",
+        help="Генерировать ответы от модели только один раз, оценивать судьей N раз (работает с -n)"
+    )
     
     args = parser.parse_args()
     
@@ -523,16 +668,42 @@ def main():
     
     # Обработка режима продолжения
     if args.continue_timestamp:
-        max_run, existing_config = find_existing_runs(args.continue_timestamp, args.dataset)
+        max_run, existing_config, existing_results = find_existing_runs(args.continue_timestamp, args.dataset)
         
         # Берем параметры из существующих логов
         model = existing_config.get("model")
         judge_model = existing_config.get("judge_model")
         verbose_name = existing_config.get("verbose_name")
+        existing_no_regenerate = existing_config.get("no_regenerate", False)
         
         logger.info(f"Продолжение серии с моделью: {model}")
         if verbose_name:
             logger.info(f"Verbose name: {verbose_name}")
+        
+        # Определяем режим no_regenerate
+        if args.no_regenerate and not existing_no_regenerate:
+            logger.warning("ВНИМАНИЕ: --no-regenerate указан, но исходная серия запускалась без этого флага")
+            logger.warning("Будет использован режим --no-regenerate с ответами из run_1 исходной серии")
+            use_no_regenerate = True
+        elif existing_no_regenerate:
+            logger.info("Исходная серия использовала --no-regenerate, продолжаем в том же режиме")
+            use_no_regenerate = True
+        else:
+            use_no_regenerate = False
+        
+        # Извлекаем только ответы без оценок судьи из существующих результатов
+        answer_results = None
+        if use_no_regenerate and existing_results:
+            answer_results = [
+                {
+                    "dialog_id": r["dialog_id"],
+                    "dialog": r["dialog"],
+                    "answer": r["answer"],
+                    "tokens": r["tokens"],
+                    "error": r["error"]
+                }
+                for r in existing_results
+            ]
         
         run_benchmark(
             args.dataset, 
@@ -542,10 +713,20 @@ def main():
             extra_body, 
             verbose_name,
             args.continue_timestamp,
-            max_run
+            max_run,
+            use_no_regenerate,
+            answer_results
         )
     else:
-        run_benchmark(args.dataset, args.num_runs, args.model, args.judge_model, extra_body, args.verbose_name)
+        run_benchmark(
+            args.dataset, 
+            args.num_runs, 
+            args.model, 
+            args.judge_model, 
+            extra_body, 
+            args.verbose_name,
+            no_regenerate=args.no_regenerate
+        )
 
 if __name__ == "__main__":
     main()
