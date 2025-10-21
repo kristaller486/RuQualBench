@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuQualBench Leaderboard </title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Фикс места под иконку и отсутствие "дёргания" заголовков */
+        th .sort-toggle {
+            width: 16px;
+            height: 16px;
+            line-height: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin-left: 6px;
+            position: relative;
+        }
+        th .sort-toggle svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 14px;
+            height: 14px;
+            transition: opacity 0.15s ease;
+            /* fill: currentColor; // уже задано inline, дублирование не мешает */
+        }
+        /* Запрет переноса текста в заголовках и лёгкая подстройка вертикального выравнивания кнопки */
+        thead th{ white-space:nowrap; }
+        thead th .sort-toggle{ top:1px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RuQualBench Leaderboard <span class="frog">🐸</span></h1>
+            <p class="subtitle">Бенчмарк качества русского языка для LLM</p>
+            <div class="view-toggle" role="group" aria-label="Переключение вида">
+                <button class="toggle-btn is-active" data-mode="table" type="button">Таблица</button>
+                <button class="toggle-btn" data-mode="cards" type="button">Карточки</button>
+            </div>
+        </header>
+        
+        <div class="leaderboard">
+            <div class="table-wrap">
+                <table>
+                <thead>
+                    <tr>
+                        <th class="sticky-0" data-col="0" data-type="num"># 
+                            <button class="sort-toggle" aria-label="Сортировать" title="Сортировать" data-state="off" style="border:none;background:none;cursor:pointer;margin-left:6px;display:inline-flex;align-items:center;vertical-align:middle;padding:0;">
+                                <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 9.97H11.03V18.89L13.04 18.92V9.97H17.03L12.03 4.97Z" /></svg>
+                                <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 13.92H11.03V5L13.04 4.97V13.92H17.03L12.03 18.92Z" /></svg>
+                            </button>
+                        </th>
+                        <th class="sticky-1" data-col="1" data-type="str">Модель 
+                            <button class="sort-toggle" aria-label="Сортировать" title="Сортировать" data-state="off" style="border:none;background:none;cursor:pointer;margin-left:6px;display:inline-flex;align-items:center;vertical-align:middle;padding:0;">
+                                <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 9.97H11.03V18.89L13.04 18.92V9.97H17.03L12.03 4.97Z" /></svg>
+                                <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 13.92H11.03V5L13.04 4.97V13.92H17.03L12.03 18.92Z" /></svg>
+                            </button>
+                        </th>
+                        <th data-col="2" data-type="num">Критичные/1000 
+                            <button class="sort-toggle" aria-label="Сортировать" title="Сортировать" data-state="off" style="border:none;background:none;cursor:pointer;margin-left:6px;display:inline-flex;align-items:center;vertical-align:middle;padding:0;">
+                                <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 9.97H11.03V18.89L13.04 18.92V9.97H17.03L12.03 4.97Z" /></svg>
+                                <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 13.92H11.03V5L13.04 4.97V13.92H17.03L12.03 18.92Z" /></svg>
+                            </button>
+                        </th>
+                        <th data-col="3" data-type="num">Обычные/1000 
+                            <button class="sort-toggle" aria-label="Сортировать" title="Сортировать" data-state="off" style="border:none;background:none;cursor:pointer;margin-left:6px;display:inline-flex;align-items:center;vertical-align:middle;padding:0;">
+                                <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 9.97H11.03V18.89L13.04 18.92V9.97H17.03L12.03 4.97Z" /></svg>
+                                <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 13.92H11.03V5L13.04 4.97V13.92H17.03L12.03 18.92Z" /></svg>
+                            </button>
+                        </th>
+                        <th data-col="4" data-type="num">Доп./1000 
+                            <button class="sort-toggle" aria-label="Сортировать" title="Сортировать" data-state="off" style="border:none;background:none;cursor:pointer;margin-left:6px;display:inline-flex;align-items:center;vertical-align:middle;padding:0;">
+                                <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 9.97H11.03V18.89L13.04 18.92V9.97H17.03L12.03 4.97Z" /></svg>
+                                <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 13.92H11.03V5L13.04 4.97V13.92H17.03L12.03 18.92Z" /></svg>
+                            </button>
+                        </th>
+                        <th class="score-col" data-col="5" data-type="num">Нормировано ошибок 
+                            <button class="sort-toggle" aria-label="Сортировать" title="Сортировать" data-state="off" style="border:none;background:none;cursor:pointer;margin-left:6px;display:inline-flex;align-items:center;vertical-align:middle;padding:0;">
+                                <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 9.97H11.03V18.89L13.04 18.92V9.97H17.03L12.03 4.97Z" /></svg>
+                                <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 13.92H11.03V5L13.04 4.97V13.92H17.03L12.03 18.92Z" /></svg>
+                            </button>
+                        </th>
+                        <th data-col="6" data-type="num">Всего токенов 
+                            <button class="sort-toggle" aria-label="Сортировать" title="Сортировать" data-state="off" style="border:none;background:none;cursor:pointer;margin-left:6px;display:inline-flex;align-items:center;vertical-align:middle;padding:0;">
+                                <svg class="icon-up" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 9.97H11.03V18.89L13.04 18.92V9.97H17.03L12.03 4.97Z" /></svg>
+                                <svg class="icon-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width:14px;height:14px;display:none;fill:currentColor;"><path d="M7.03 13.92H11.03V5L13.04 4.97V13.92H17.03L12.03 18.92Z" /></svg>
+                            </button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in leaderboard %}
+                    <tr>
+                        <td class="rank mono sticky-0" data-label="#">#{{ loop.index }}</td>
+                        <td class="model-name sticky-1" data-label="Модель">{{ entry.model }}</td>
+                        <td class="num mono" data-label="Критичные/1000">
+                            {% if entry.critical_se %}
+                            {{ "%.2f"|format(entry.critical) }} ± {{ "%.2f"|format(entry.critical_se) }}
+                            {% else %}
+                            {{ "%.2f"|format(entry.critical) }}
+                            {% endif %}
+                        </td>
+                        <td class="num mono" data-label="Обычные/1000">
+                            {% if entry.mistakes_se %}
+                            {{ "%.2f"|format(entry.mistakes) }} ± {{ "%.2f"|format(entry.mistakes_se) }}
+                            {% else %}
+                            {{ "%.2f"|format(entry.mistakes) }}
+                            {% endif %}
+                        </td>
+                        <td class="num mono" data-label="Доп./1000">
+                            {% if entry.additional_se %}
+                            {{ "%.2f"|format(entry.additional) }} ± {{ "%.2f"|format(entry.additional_se) }}
+                            {% else %}
+                            {{ "%.2f"|format(entry.additional) }}
+                            {% endif %}
+                        </td>
+                        <td data-label="Нормировано ошибок">
+                            <div class="score-cell">
+                                <div class="progress-bar">
+                                    {% set ratio = (entry.total / max_score) if max_score > 0 else 0 %}
+                                    {% set bar_width = (1 - ratio) * 100 %}
+                                    {% set bar_width = 100 if bar_width > 100 else (0 if bar_width < 0 else bar_width) %}
+                                    <div class="progress-fill" style="width: {{ bar_width }}%"></div>
+                                </div>
+                                <span class="score-value">
+                                    {% if entry.total_se %}
+                                    {{ "%.2f"|format(entry.total) }} ± {{ "%.2f"|format(entry.total_se) }}
+                                    {% else %}
+                                    {{ "%.2f"|format(entry.total) }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="num mono" data-label="Всего токенов">{{ "{:,}".format(entry.tokens) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <p>
+                <p>Метрики показывают ошибки русского языка, подсчитанные на 1000 токенов ответа: </p>
+                <p>"Критичные" - грубые нарушения (проблемы в соглавсовании слов, вставки на других языках, наиболее неестественные придуманные слова);</p>
+                <p>"Обычные" - заметные ошибки (кальки, согласование и т.п.);</p>
+                <p>"Дополнительные" - малозначимые нарушения, почти не влияющие на читаемость.</p>
+            </p>
+            <p>
+                Значения нормированы на 1000 токенов o200k_base текста; "±" - стандартная ошибка (SE) по серии прогонов, если запусков было несколько.
+                Чем меньше "Нормировано ошибок", тем лучше.
+            </p>
+            <p>
+                "Нормировано ошибок" - взвешенная метрика: критичные ошибки умножаются на 2, обычные - на 1, дополнительные - на 0.5; сумма нормируется на 1000 токенов ответа.
+            </p>
+            <p>Результаты для Gemini 2.5 Flash Lite могут быть завышеными.</p>
+        </div>
+        
+        <p class="info-text">
+            Обновлено: {{ update_time }} | Всего моделей: {{ leaderboard|length }}
+        </p>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const h1 = document.querySelector('h1');
+            const frogSpan = document.querySelector('.frog');
+            let isKva = false;
+            
+            frogSpan.style.cursor = 'pointer';
+            
+            frogSpan.addEventListener('click', function() {
+                isKva = !isKva;
+                const textNode = h1.firstChild;
+                textNode.textContent = isKva ? 'RuКваlBench Leaderboard ' : 'RuQualBench Leaderboard ';
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('.leaderboard table');
+            if (!table || !table.tHead || !table.tBodies.length) return;
+
+            const thead = table.tHead;
+            const tbody = table.tBodies[0];
+
+            // Зафиксируем исходный порядок строк, чтобы можно было вернуть "выключено"
+            Array.from(tbody.querySelectorAll('tr')).forEach((r, i) => r.dataset.initIndex = i);
+
+            function parseNumeric(text) {
+                if (!text) return NaN;
+                let base = text.split('±')[0];
+                base = base.replace(/[^0-9\.\-]/g, '');
+                const num = parseFloat(base);
+                return isNaN(num) ? NaN : num;
+            }
+
+            function getCellValue(row, col, type) {
+                const td = row.children[col];
+                if (!td) return type === 'num' ? NaN : '';
+                if (type === 'num') {
+                    let text;
+                    // Для "Нормировано ошибок" берём число из span.score-value
+                    if (col === 5) {
+                        const sv = td.querySelector('.score-value');
+                        text = sv ? sv.textContent : td.textContent;
+                    } else {
+                        text = td.textContent;
+                    }
+                    return parseNumeric(text);
+                } else {
+                    return td.textContent.trim().toLowerCase();
+                }
+            }
+
+            function resort(col, type, state) {
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                if (state === 'off') {
+                    rows.sort((a, b) => (parseInt(a.dataset.initIndex, 10) - parseInt(b.dataset.initIndex, 10)));
+                } else {
+                    const dir = state === 'asc' ? 1 : -1;
+                    rows.sort((r1, r2) => {
+                        const v1 = getCellValue(r1, col, type);
+                        const v2 = getCellValue(r2, col, type);
+                        let cmp = 0;
+                        if (type === 'num') {
+                            if (isNaN(v1) && isNaN(v2)) cmp = 0;
+                            else if (isNaN(v1)) cmp = 1;
+                            else if (isNaN(v2)) cmp = -1;
+                            else cmp = v1 - v2;
+                        } else {
+                            cmp = v1.localeCompare(v2, 'ru');
+                        }
+                        return cmp * dir;
+                    });
+                }
+                rows.forEach(r => tbody.appendChild(r));
+                // Пересчёт колонки "#"
+                Array.from(tbody.querySelectorAll('tr')).forEach((r, idx) => {
+                    const rankCell = r.children[0];
+                    if (rankCell) rankCell.textContent = '#' + (idx + 1);
+                });
+            }
+
+            function updateThIcon(th) {
+                const state = th.dataset.state || 'off';
+                const btn = th.querySelector('.sort-toggle');
+                if (!btn) return;
+                const up = btn.querySelector('.icon-up');
+                const down = btn.querySelector('.icon-down');
+                // Не скрываем элемент целиком — только прозрачность, чтобы не было сдвигов
+                if (up) {
+                    up.style.display = 'block';
+                    up.style.opacity = (state === 'asc') ? '1' : '0';
+                }
+                if (down) {
+                    down.style.display = 'block';
+                    // В "off" показываем бледную вниз-стрелку как неактивную подсказку
+                    down.style.opacity = (state === 'off') ? '0.35' : (state === 'desc' ? '1' : '0');
+                }
+            }
+
+            function clearOtherStates(activeTh) {
+                thead.querySelectorAll('th[data-col]').forEach(th => {
+                    if (th !== activeTh) {
+                        th.dataset.state = 'off';
+                        updateThIcon(th);
+                    }
+                });
+            }
+
+            thead.querySelectorAll('th[data-col]').forEach(th => {
+                th.dataset.state = 'off';
+                updateThIcon(th);
+                const btn = th.querySelector('.sort-toggle');
+                if (!btn) return;
+                btn.addEventListener('click', () => {
+                    const current = th.dataset.state || 'off';
+                    const next = current === 'off' ? 'desc' : (current === 'desc' ? 'asc' : 'off');
+                    clearOtherStates(th);
+                    th.dataset.state = next;
+                    updateThIcon(th);
+                    const col = parseInt(th.getAttribute('data-col'), 10);
+                    const type = th.getAttribute('data-type') || 'str';
+                    resort(col, type, next);
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const root = document.body;
+            const btns = document.querySelectorAll('.view-toggle .toggle-btn');
+            function setMode(mode){
+                if(mode === 'cards'){
+                    root.classList.add('cards-mode');
+                }else{
+                    root.classList.remove('cards-mode');
+                }
+                btns.forEach(b => b.classList.toggle('is-active', b.dataset.mode === mode));
+            }
+            const preferCards = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+            setMode(preferCards ? 'cards' : 'table');
+            btns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+        });
+    </script>
+</body>
+</html>

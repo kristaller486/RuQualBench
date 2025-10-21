@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Debug: {{ filename }}</title>
+  <style>
+    :root {
+      --border:#d9d9d9;
+      --bg:#f7f7f7;
+      --panel:#ffffff;
+      --text:#2c3e50;
+      --muted:#7f8c8d;
+      --primary:#3498db;
+      --answer-border:#95a5a6;
+      --mistake:#e74c3c;
+      --additional:#f39c12;
+      --mistake-bg:#ffe6e6;
+      --additional-bg:#fff4e6;
+    }
+    * { box-sizing:border-box; }
+    html,body { height:100%; }
+    body {
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      display:flex;
+      flex-direction:column;
+    }
+    /* Header */
+    .header {
+      background:#273746;
+      color:#fff;
+      padding:12px 16px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      border-bottom:1px solid #1c2833;
+    }
+    .file-title {
+      font-weight:700;
+      font-size:18px;
+      padding:6px 10px;
+      background:#1f2d3a;
+      border-radius:6px;
+      border:1px solid #1a2531;
+    }
+    .header .meta {
+      font-size:12px;
+      opacity:.9;
+    }
+
+    /* Layout */
+    .layout {
+      flex:1;
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:14px;
+      padding:14px;
+      height:calc(100% - 0px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:10px;
+      overflow:auto;
+      padding:10px;
+    }
+    .sidebar-title {
+      font-weight:700;
+      margin-bottom:6px;
+      opacity:.9;
+    }
+    .example {
+      user-select:none;
+      cursor:pointer;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      margin-bottom:8px;
+      transition:background .15s,border-color .15s,color .15s;
+      color:#2d3436;
+      background:#fafafa;
+    }
+    .example:hover { background:#f0f3f5; }
+    .example.active {
+      background:#eaf4ff;
+      border-color:#b8dcff;
+      color:#0b63b0;
+      font-weight:600;
+    }
+    .example.error {
+      background:#fff1f1;
+      border-color:#ffc9c9;
+      color:#b00020;
+    }
+    .example.has-critical {
+      background:#ffe6e6;
+      border-color:#e74c3c;
+      color:#b00020;
+    }
+    .example.has-mistakes {
+      background:#fff4e6;
+      border-color:#f39c12;
+      color:#c87400;
+    }
+    .example.has-additional {
+      border:2px solid #f39c12;
+    }
+    .err-count { font-weight:600; margin-left:2px; }
+    .err-count.zero { color:#f39c12; }
+    .err-count.crit { color:#c0392b; }
+    .err-count.err-main { color:#e74c3c; }
+    .err-count.add { color:#f39c12; }
+
+    /* Main area */
+    .main {
+      display:grid;
+      grid-template-rows:auto 1fr;
+      gap:12px;
+      overflow:hidden;
+    }
+
+    /* Prompt bar with counters on the right */
+    .prompt {
+      position:relative;
+      background:var(--panel);
+      border:2px solid var(--primary);
+      border-radius:10px;
+      padding:10px 12px 10px 12px;
+      /* ограничиваем высоту, чтобы длинный промпт не перекрывал интерфейс */
+      max-height: 30vh;
+      min-height:80px;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      /* место для счетчиков справа */
+      padding-right: 96px;
+    }
+    .prompt-title {
+      font-size:12px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      color:#1d3557;
+      margin-bottom:6px;
+    }
+    .prompt-text {
+      white-space:pre-wrap;
+      line-height:1.5;
+      font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;
+      font-size:13px;
+      /* прокрутка внутри области промпта при большой длине */
+      overflow:auto;
+      flex:1;
+    }
+    .counters {
+      position:absolute;
+      right:10px;
+      top:8px;
+      text-align:right;
+      line-height:1.25;
+    }
+    .counter {
+      font-weight:800;
+      font-size:16px;
+    }
+    .counter .label { font-weight:600; margin-right:4px; }
+    .counter.crit { color:#c0392b; }
+    .counter.main { color:var(--mistake); }
+    .counter.add { color:var(--additional); }
+
+    /* Two columns below prompt */
+    .content {
+      display:grid;
+      grid-template-columns:1fr 420px;
+      gap:12px;
+      height:100%;
+      overflow:hidden;
+    }
+    .panel {
+      background:var(--panel);
+      border:2px solid var(--answer-border);
+      border-radius:10px;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .panel-title {
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      font-size:12px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      color:#1d3557;
+      background:#fbfbfb;
+    }
+    .panel-body {
+      padding:12px;
+      overflow:auto;
+      flex:1;
+    }
+    .answer-text {
+      white-space:pre-wrap;
+      line-height:1.65;
+      font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;
+      font-size:13px;
+    }
+    .tokens {
+      padding:8px 12px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
+      background:#fcfcfc;
+    }
+
+    /* Explanations */
+    .exp-group-title {
+      font-size:13px;
+      font-weight:800;
+      margin:6px 0 8px;
+      color:#2c3e50;
+    }
+    .exp-list { list-style:none; padding:0; margin:0 0 8px 0; }
+    .exp-item {
+      padding:10px 12px;
+      margin-bottom:8px;
+      border-radius:8px;
+      font-size:13px;
+      line-height:1.45;
+      word-break:break-word;
+    }
+    .exp-item.crit {
+      background:#ffe6e6;
+      border-left:4px solid #c0392b;
+    }
+    .exp-item.main {
+      background:var(--mistake-bg);
+      border-left:4px solid var(--mistake);
+    }
+    .exp-item.add {
+      background:var(--additional-bg);
+      border-left:4px solid var(--additional);
+    }
+    .no-errors {
+      color:#27ae60;
+      font-weight:800;
+      text-align:center;
+      padding:22px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="file-title">{{ filename }}</div>
+    <div class="meta">
+      Модель: {{ config.model }} | Judge: {{ config.judge_model }} | Датасет: {{ config.dataset }} |
+      Обработано: {{ summary.successful_dialogs }}/{{ summary.total_dialogs }} |
+      Среднее (всего) на 1000 токенов: {{ summary.all_mistakes_per_1000_tokens }}
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">Примеры</div>
+      {% for r in results %}
+      <div class="example
+        {%- if r.get('critical_mistakes', 0) > 0 %} has-critical
+        {%- elif r.get('mistakes', 0) > 0 %} has-mistakes
+        {%- elif r.get('additional_mistakes', 0) > 0 %} has-additional
+        {%- endif -%}
+        {%- if r.error %} error{% endif %}" 
+        data-index="{{ r.dialog_id }}" 
+        onclick="showDialog({{ r.dialog_id }})">
+        №{{ r.dialog_id + 1 }} К:&nbsp;<span class="err-count {% if r.get('critical_mistakes', 0) > 0 %}crit{% else %}zero{% endif %}">{{ r.get('critical_mistakes', 0) }}</span>, О:&nbsp;<span class="err-count {% if r.get('mistakes', 0) > 0 %}err-main{% else %}zero{% endif %}">{{ r.get('mistakes', 0) }}</span>, Д:&nbsp;<span class="err-count {% if r.get('additional_mistakes', 0) > 0 %}add{% else %}zero{% endif %}">{{ r.get('additional_mistakes', 0) }}</span>
+      </div>
+      {% endfor %}
+    </aside>
+
+    <main class="main">
+      <!-- Prompt -->
+      <section class="prompt">
+        <div class="prompt-title">ПРОМПТ (только последнее сообщение)</div>
+        <div id="prompt" class="prompt-text"></div>
+        <div class="counters">
+          <div class="counter crit"><span class="label">крит:</span><span id="cnt-crit">0</span></div>
+          <div class="counter main"><span class="label">осн:</span><span id="cnt-main">0</span></div>
+          <div class="counter add"><span class="label">доп:</span><span id="cnt-add">0</span></div>
+        </div>
+      </section>
+
+      <!-- Two columns -->
+      <section class="content">
+        <div class="panel">
+          <div class="panel-title">Текст ответа</div>
+          <div id="answer" class="panel-body answer-text"></div>
+          <div id="tokens" class="tokens"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Пояснения к ошибкам</div>
+          <div id="explanations" class="panel-body"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script id="bench-data-b64" type="application/octet-stream">{{ results_b64 }}</script>
+  <script>
+    // Данные из лога (base64 безопасная передача)
+    const b64 = document.getElementById('bench-data-b64').textContent.trim();
+    const results = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0))));
+    let currentIndex = 0;
+
+    function byId(id){ return document.getElementById(id); }
+
+    // Превращаем литералы \n \t в реальные переносы, если пришли строкой
+    function decodeText(s) {
+      if (typeof s !== 'string') return '';
+      // Нормализуем экранирования до тех пор, пока остаются \n, \t, \\" или двойные слэши
+      let prev;
+      let out = s;
+      do {
+        prev = out;
+        out = out
+          .replace(/\\r\\n/g, '\n')
+          .replace(/\\n/g, '\n')
+          .replace(/\\t/g, '\t')
+          .replace(/\\"/g, '"')
+          .replace(/\\\\/g, '\\');
+      } while (out.includes('\\n') || out.includes('\\t') || out.includes('\\"') || out.includes('\\\\'));
+      return out;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function setActiveInSidebar(idx){
+      const nodes = document.querySelectorAll('.example');
+      nodes.forEach((el) => {
+        const i = Number(el.getAttribute('data-index'));
+        if (i === idx) el.classList.add('active');
+        else el.classList.remove('active');
+      });
+    }
+
+    function lastUserMessage(dialog) {
+      // Берем последнее сообщение из диалога с role === 'user' (по требованиям)
+      for (let i = dialog.length - 1; i >= 0; i--) {
+        if (dialog[i] && dialog[i].role === 'user') return dialog[i].content || '';
+      }
+      // fallback: последнее сообщение
+      const last = dialog[dialog.length - 1] || {};
+      return last.content || '';
+    }
+
+    function renderExplanations(res) {
+      const wrap = byId('explanations');
+      const c = Array.isArray(res.explanation_critical_mistakes) ? res.explanation_critical_mistakes : [];
+      const m = Array.isArray(res.explanation_mistakes) ? res.explanation_mistakes : [];
+      const a = Array.isArray(res.explanation_additional_mistakes) ? res.explanation_additional_mistakes : [];
+
+      if ((c.length + m.length + a.length) === 0) {
+        wrap.innerHTML = '<div class="no-errors">✓ Ошибок не найдено</div>';
+        return;
+      }
+
+      let html = '';
+      if (c.length) {
+        html += '<div class="exp-group-title">Критические ошибки</div><ul class="exp-list">';
+        for (const item of c) {
+          html += '<li class="exp-item crit">' + escapeHtml(item) + '</li>';
+        }
+        html += '</ul>';
+      }
+      if (m.length) {
+        html += '<div class="exp-group-title">Основные ошибки</div><ul class="exp-list">';
+        for (const item of m) {
+          html += '<li class="exp-item main">' + escapeHtml(item) + '</li>';
+        }
+        html += '</ul>';
+      }
+      if (a.length) {
+        html += '<div class="exp-group-title">Дополнительные ошибки</div><ul class="exp-list">';
+        for (const item of a) {
+          html += '<li class="exp-item add">' + escapeHtml(item) + '</li>';
+        }
+        html += '</ul>';
+      }
+      wrap.innerHTML = html;
+    }
+
+    function showDialog(index) {
+      currentIndex = index;
+      const r = results[index] || {};
+
+      setActiveInSidebar(index);
+
+      const prompt = decodeText(lastUserMessage(r.dialog || []));
+      const answer = decodeText(r.answer || 'ОШИБКА ПРИ ГЕНЕРАЦИИ');
+
+      byId('prompt').textContent = prompt;
+      byId('answer').textContent = answer;
+
+      const tokens = Number(r.tokens || 0);
+      byId('tokens').textContent = 'Токенов: ' + tokens;
+
+      const critical = Number(r.critical_mistakes || 0);
+      const mistakes = Number(r.mistakes || 0);
+      const additional = Number(r.additional_mistakes || 0);
+      byId('cnt-crit').textContent = String(critical);
+      byId('cnt-main').textContent = String(mistakes);
+      byId('cnt-add').textContent = String(additional);
+
+      renderExplanations(r);
+    }
+
+    // init
+    if (Array.isArray(results) && results.length > 0) {
+      showDialog(0);
+    }
+
+    // keyboard nav
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowDown' && currentIndex < results.length - 1) {
+        showDialog(currentIndex + 1);
+      } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+        showDialog(currentIndex - 1);
+      }
+    });
+  </script>
+</body>
+</html>
+  </script>
+</body>
+</html>
