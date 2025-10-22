@@ -94,7 +94,7 @@
                 </thead>
                 <tbody>
                     {% for entry in leaderboard %}
-                    <tr>
+                    <tr data-model="{{ entry.original_model }}">
                         <td class="rank mono sticky-0" data-label="#">#{{ loop.index }}</td>
                         <td class="model-name sticky-1" data-label="Модель">{{ entry.model }}</td>
                         <td class="num mono" data-label="Критичные/1000">

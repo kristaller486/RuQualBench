@@ -34,7 +34,8 @@ def parse_logs(logs_dir: Path) -> Dict[str, List[Dict[str, Any]]]:
                 "additional": additional,
                 "total": normalized_total,
                 "tokens": summary.get("total_tokens", 0),
-                "file": log_file.name
+                "file": log_file.name,
+                "original_model": model_name
             })
         except Exception as e:
             print(f"Ошибка при парсинге {log_file}: {e}")
@@ -78,7 +79,8 @@ def aggregate_model_data(runs: List[Dict[str, Any]]) -> Dict[str, Any]:
         "total_se": round(calc_se(total_values), 2) if len(runs) >= 2 else None,
         "tokens": int(statistics.mean(tokens_values)),
         "num_runs": len(runs),
-        "file": runs[0]["file"]
+        "file": runs[0]["file"],
+        "original_model": runs[0]["original_model"]
     }
 
 
