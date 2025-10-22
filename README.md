@@ -23,7 +23,7 @@ uv run python main.py --help
 
 ``` 
 usage: main.py [-h] [--dataset {lite,base,large}] [--model MODEL] [--judge-model JUDGE_MODEL] [--extra-body EXTRA_BODY] [-n NUM_RUNS] [-v VERBOSE_NAME]
-               [--continue CONTINUE_TIMESTAMP]
+               [--continue CONTINUE_TIMESTAMP] [--no-regenerate]
 
 RuQualBench - бенчмарк качества русского языка
 
@@ -42,6 +42,7 @@ options:
                         Красивое имя модели для отображения в лидерборде (опционально)
   --continue CONTINUE_TIMESTAMP
                         Продолжить существующую серию прогонов (указать timestamp, например: 2025-10-17_15-17-05)
+  --no-regenerate       Генерировать ответы от модели только один раз, оценивать судьей N раз (работает с -n)
 ```
 
 ### Посмотреть результаты
