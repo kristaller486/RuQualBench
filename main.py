@@ -57,6 +57,10 @@ def extract_json_from_response(text: str) -> dict:
     
     return json.loads(text)
 
+def remove_think_tags(text: str) -> str:
+    """Удаляет контент между тегами <think></think>"""
+    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+
 async def generate_answer(messages: List[Dict[str, str]], model_name: str, 
                          api_base: str, api_key: str, semaphore: asyncio.Semaphore,
                          max_retries: int, retry_delay: float, temperature: float = 1.0, 
@@ -78,7 +82,12 @@ async def generate_answer(messages: List[Dict[str, str]], model_name: str,
                     kwargs["extra_body"] = extra_body
                     
                 response = await acompletion(**kwargs)
-                return response.choices[0].message.content
+                content = response.choices[0].message.content
+                
+                if os.getenv("TEST_MODEL_EXCLUDE_THINK", "").lower() in ["true", "1", "yes"]:
+                    content = remove_think_tags(content)
+                
+                return content
             except Exception as e:
                 last_error = e
                 if attempt < max_retries - 1:
