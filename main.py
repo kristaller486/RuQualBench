@@ -135,13 +135,26 @@ async def judge_answer(dialog: List[Dict[str, str]], answer: str,
                 response = await acompletion(**kwargs)
                 
                 result = extract_json_from_response(response.choices[0].message.content)
+                
+                # Нормализуем explanation_* - все элементы должны быть строками
+                def normalize_explanations(explanations):
+                    normalized = []
+                    for item in explanations:
+                        if isinstance(item, str):
+                            normalized.append(item)
+                        elif isinstance(item, dict):
+                            normalized.append(json.dumps(item, ensure_ascii=False))
+                        else:
+                            normalized.append(str(item))
+                    return normalized
+                
                 return {
                     "critical_mistakes": result.get("critical_mistakes", 0),
                     "mistakes": result.get("mistakes", 0),
                     "additional_mistakes": result.get("additional_mistakes", 0),
-                    "explanation_critical_mistakes": result.get("explanation_critical_mistakes", []),
-                    "explanation_mistakes": result.get("explanation_mistakes", []),
-                    "explanation_additional_mistakes": result.get("explanation_additional_mistakes", [])
+                    "explanation_critical_mistakes": normalize_explanations(result.get("explanation_critical_mistakes", [])),
+                    "explanation_mistakes": normalize_explanations(result.get("explanation_mistakes", [])),
+                    "explanation_additional_mistakes": normalize_explanations(result.get("explanation_additional_mistakes", []))
                 }
             except Exception as e:
                 last_error = e

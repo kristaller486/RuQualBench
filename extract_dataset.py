@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import re
+import statistics
 from pathlib import Path
 from typing import List, Dict, Any
 from collections import defaultdict
@@ -146,10 +147,17 @@ def extract_dataset_from_logs(log_data_list: List[Dict[str, Any]]) -> Dict[str, 
     errors_count = sum(dataset_dict["has_error"])
     cycles_count = sum(dataset_dict["is_generation_cycle"])
     
+    total_tokens = sum(dataset_dict["tokens"])
+    avg_tokens = statistics.mean(dataset_dict["tokens"]) if dataset_dict["tokens"] else 0
+    median_tokens = statistics.median(dataset_dict["tokens"]) if dataset_dict["tokens"] else 0
+    
     logger.info(f"Всего записей: {total_records}")
     logger.info(f"Дубликатов ответов: {duplicates_count}")
     logger.info(f"Записей с ошибками: {errors_count}")
     logger.info(f"Записей с циклами генерации: {cycles_count}")
+    logger.info(f"Всего токенов: {total_tokens}")
+    logger.info(f"Токенов на ответ (сред): {avg_tokens:.2f}")
+    logger.info(f"Токенов на ответ (медиан): {median_tokens:.2f}")
     
     return dict(dataset_dict)
 
