@@ -1,13 +1,25 @@
 import argparse
+import asyncio
+import hashlib
 import json
 import logging
+import os
 import re
 import statistics
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from collections import defaultdict
 
 from datasets import Dataset
+from dotenv import load_dotenv
+from jinja2 import Environment, FileSystemLoader
+from litellm import acompletion
+import litellm
+from tqdm.asyncio import tqdm as atqdm
+
+litellm.ssl_verify = False
+
+load_dotenv()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -162,6 +174,207 @@ def extract_dataset_from_logs(log_data_list: List[Dict[str, Any]]) -> Dict[str, 
     return dict(dataset_dict)
 
 
+def hash_correction_input(answer: str, mistakes: List[str]) -> str:
+    """Генерирует хеш для пары (ответ, список ошибок)"""
+    content = answer + "|" + "|".join(sorted(mistakes))
+    return hashlib.sha256(content.encode('utf-8')).hexdigest()
+
+
+def load_log_cache(log_file: str, cache_dir: Path) -> dict:
+    """Загружает кеш для конкретного лог-файла"""
+    cache_path = cache_dir / log_file
+    if cache_path.exists():
+        with open(cache_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+
+def save_log_cache(log_file: str, cache_dir: Path, cache: dict):
+    """Сохраняет кеш для конкретного лог-файла"""
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_dir / log_file
+    with open(cache_path, 'w', encoding='utf-8') as f:
+        json.dump(cache, f, ensure_ascii=False, indent=2)
+
+
+async def correct_mistakes(answer: str, prompt: Any, mistakes: List[str], 
+                          model_name: str, api_base: str, api_key: str,
+                          semaphore: asyncio.Semaphore, max_retries: int, 
+                          retry_delay: float, temperature: float = 0.3,
+                          max_tokens: int = 8192) -> str:
+    """Исправляет ошибки в ответе с помощью модели"""
+    async with semaphore:
+        env = Environment(loader=FileSystemLoader('prompts'))
+        system_template = env.get_template('correct_mistakes_system.jinja2')
+        user_template = env.get_template('correct_mistakes_user.jinja2')
+        
+        system_prompt = system_template.render()
+        user_prompt = user_template.render(
+            answer=answer,
+            prompt=prompt,
+            mistakes=mistakes
+        )
+        
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+        
+        last_error = None
+        for attempt in range(max_retries):
+            try:
+                response = await acompletion(
+                    model=model_name,
+                    messages=messages,
+                    api_base=api_base,
+                    api_key=api_key,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                last_error = e
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(retry_delay * (attempt + 1))
+                else:
+                    raise last_error
+
+
+async def correct_dataset_mistakes(dataset_dict: Dict[str, List[Any]], 
+                                   log_data_list: List[Dict[str, Any]],
+                                   cache_dir: Path) -> Dict[str, List[Any]]:
+    """Добавляет колонку с исправленными текстами в датасет"""
+    
+    correct_model = os.getenv("CORRECT_MODEL_NAME")
+    correct_api_base = os.getenv("CORRECT_MODEL_BASE_URL")
+    correct_api_key = os.getenv("CORRECT_MODEL_API_KEY")
+    correct_max_workers = int(os.getenv("CORRECT_MODEL_MAX_WORKERS", "5"))
+    correct_temperature = float(os.getenv("CORRECT_MODEL_TEMPERATURE", "0.3"))
+    correct_max_tokens = int(os.getenv("CORRECT_MODEL_MAX_TOKENS", "8192"))
+    
+    max_retries = int(os.getenv("MAX_RETRIES", "3"))
+    retry_delay = float(os.getenv("RETRY_DELAY", "1.0"))
+    
+    logger.info(f"Модель исправления: {correct_model} (max_workers={correct_max_workers}, temperature={correct_temperature})")
+    
+    semaphore = asyncio.Semaphore(correct_max_workers)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Создаем маппинг: (timestamp, run_number) -> log_file для поиска кеша
+    log_file_map = {}
+    for log_item in log_data_list:
+        log_file = log_item["file"]
+        config = log_item["data"].get("config", {})
+        timestamp = config.get("timestamp", "unknown")
+        run_number = config.get("run_number", 0)
+        log_file_map[(timestamp, run_number)] = log_file
+    
+    # Группируем записи по лог-файлам для батчевой обработки
+    records_by_log = defaultdict(list)
+    for i in range(len(dataset_dict["dialog_id"])):
+        timestamp = dataset_dict["timestamp"][i]
+        run_number = dataset_dict["run_number"][i]
+        log_file = log_file_map.get((timestamp, run_number), "unknown.json")
+        records_by_log[log_file].append(i)
+    
+    corrected_texts = [None] * len(dataset_dict["dialog_id"])
+    
+    total_to_generate = 0
+    total_from_cache = 0
+    
+    # Обрабатываем каждый лог-файл
+    for log_file, record_indices in records_by_log.items():
+        logger.info(f"Обработка {log_file}: {len(record_indices)} записей")
+        
+        # Загружаем кеш для этого лог-файла
+        cache = load_log_cache(log_file, cache_dir)
+        cache_modified = False
+        
+        tasks = []
+        
+        for idx in record_indices:
+            test_answer = dataset_dict["test_answer"][idx]
+            dialog = dataset_dict["dialog"][idx]
+            
+            # Edge cases
+            if not test_answer:
+                corrected_texts[idx] = None
+                continue
+            
+            # Собираем все ошибки
+            all_mistakes = (
+                dataset_dict["explanation_critical_mistakes"][idx] +
+                dataset_dict["explanation_mistakes"][idx] +
+                dataset_dict["explanation_additional_mistakes"][idx]
+            )
+            
+            # Если ошибок нет, просто копируем
+            if not all_mistakes:
+                corrected_texts[idx] = test_answer
+                continue
+            
+            # Вычисляем хеш
+            cache_hash = hash_correction_input(test_answer, all_mistakes)
+            
+            # Проверяем кеш
+            if cache_hash in cache:
+                corrected_texts[idx] = cache[cache_hash]
+                total_from_cache += 1
+            else:
+                # Создаем задачу для генерации
+                tasks.append((idx, test_answer, dialog, all_mistakes, cache_hash))
+                total_to_generate += 1
+        
+        # Генерируем исправления для новых записей
+        if tasks:
+            logger.info(f"  Генерация исправлений: {len(tasks)} (из кеша: {len(record_indices) - len(tasks)})")
+            
+            async_tasks = [
+                correct_mistakes(
+                    answer=task[1],
+                    prompt=task[2],
+                    mistakes=task[3],
+                    model_name=correct_model,
+                    api_base=correct_api_base,
+                    api_key=correct_api_key,
+                    semaphore=semaphore,
+                    max_retries=max_retries,
+                    retry_delay=retry_delay,
+                    temperature=correct_temperature,
+                    max_tokens=correct_max_tokens
+                )
+                for task in tasks
+            ]
+            
+            results = []
+            for coro in atqdm.as_completed(async_tasks, desc=f"Исправление ({log_file})", total=len(async_tasks)):
+                try:
+                    result = await coro
+                    results.append(result)
+                except Exception as e:
+                    logger.error(f"Ошибка при исправлении: {e}", exc_info=True)
+                    results.append(None)
+            
+            # Сохраняем результаты
+            for (idx, _, _, _, cache_hash), corrected_text in zip(tasks, results):
+                corrected_texts[idx] = corrected_text
+                if corrected_text is not None:
+                    cache[cache_hash] = corrected_text
+                    cache_modified = True
+        
+        # Сохраняем обновленный кеш
+        if cache_modified:
+            save_log_cache(log_file, cache_dir, cache)
+            logger.info(f"  Кеш обновлен: {len(cache)} записей")
+    
+    logger.info(f"Всего исправлений: {total_to_generate} сгенерировано, {total_from_cache} из кеша")
+    
+    # Добавляем колонку в датасет
+    dataset_dict["corrected_text"] = corrected_texts
+    
+    return dataset_dict
+
+
 def save_dataset(dataset_dict: Dict[str, List[Any]], output_path: Path):
     """Сохраняет датасет в формате Hugging Face datasets"""
     
@@ -186,7 +399,7 @@ def save_dataset(dataset_dict: Dict[str, List[Any]], output_path: Path):
         logger.info(f"Датасет сохранен в {output_path} (формат: arrow)")
 
 
-def main():
+async def main_async():
     parser = argparse.ArgumentParser(
         description="Извлекает датасет из файлов логов бенчмарка"
     )
@@ -217,6 +430,11 @@ def main():
         type=str,
         choices=["lite", "base", "large"],
         help="Фильтровать по типу датасета"
+    )
+    parser.add_argument(
+        "--correct-mistakes",
+        action="store_true",
+        help="Добавить колонку с исправленными текстами (используя CORRECT_MODEL_* из .env)"
     )
     
     args = parser.parse_args()
@@ -254,10 +472,24 @@ def main():
     # Извлечение данных
     dataset_dict = extract_dataset_from_logs(log_data_list)
     
+    # Исправление ошибок (если включен флаг)
+    if args.correct_mistakes:
+        logger.info("")
+        logger.info("="*70)
+        logger.info("ИСПРАВЛЕНИЕ ОШИБОК")
+        logger.info("="*70)
+        
+        cache_dir = Path("cache/correct_mistakes")
+        dataset_dict = await correct_dataset_mistakes(dataset_dict, log_data_list, cache_dir)
+    
     # Сохранение датасета
     save_dataset(dataset_dict, output_path)
     
     logger.info("Готово!")
+
+
+def main():
+    asyncio.run(main_async())
 
 
 if __name__ == "__main__":

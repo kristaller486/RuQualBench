@@ -7,8 +7,12 @@ wheels/
 *.egg-info
 .env
 index.html
-logs/**
+logs/**.html
 trash/**
+logs_dataset**
+
+# Cache
+cache/
 
 # Virtual environments
 .venv

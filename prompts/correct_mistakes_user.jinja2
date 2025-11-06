@@ -1,0 +1,25 @@
+<ответ>
+{{ answer }}
+</ответ>
+
+{% if prompt | length == 1 %}
+<подсказка>
+{{ prompt }}
+</подсказка>
+{% elif prompt | length > 1 %}
+<история сообщений>
+{% for message in prompt %}
+<{{ message.role }}>
+{{ message.content }}
+</{{ message.role }}>
+{% endfor %}
+</история сообщений>
+{% endif %}
+
+<список ошибок>
+{% for mistake in mistakes %}
+<ошибка>
+{{ mistake }}
+</ошибка>
+{% endfor %}
+</список ошибок>
