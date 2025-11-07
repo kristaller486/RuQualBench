@@ -10,6 +10,7 @@ import statistics
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor
 
 from datasets import Dataset
 from dotenv import load_dotenv
@@ -48,6 +49,38 @@ def detect_generation_cycle(text: str) -> bool:
     return False
 
 
+def detect_generation_cycle_batch(texts: List[str]) -> List[bool]:
+    """Обрабатывает пакет текстов параллельно"""
+    return [detect_generation_cycle(text) if text else False for text in texts]
+
+
+async def process_answers_parallel(test_answers: List[str], min_parallel_threshold: int = 1000) -> List[bool]:
+    """Асинхронная параллельная обработка ответов с использованием ProcessPoolExecutor"""
+    if len(test_answers) < min_parallel_threshold:
+        # Для небольших объемов используем синхронную обработку
+        return [detect_generation_cycle(text) if text else False for text in test_answers]
+    
+    loop = asyncio.get_event_loop()
+    num_workers = min(os.cpu_count() or 1, len(test_answers) // 100)
+    
+    if num_workers <= 1:
+        return [detect_generation_cycle(text) if text else False for text in test_answers]
+    
+    logger.info(f"Запуск параллельной обработки {len(test_answers)} ответов с {num_workers} воркерами")
+    
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        batch_size = max(100, len(test_answers) // (num_workers * 2))
+        batches = [test_answers[i:i + batch_size] for i in range(0, len(test_answers), batch_size)]
+        
+        tasks = [
+            loop.run_in_executor(executor, detect_generation_cycle_batch, batch)
+            for batch in batches
+        ]
+        
+        results = await asyncio.gather(*tasks)
+        return [item for sublist in results for item in sublist]
+
+
 def load_benchmark_logs(logs_dir: Path, filter_timestamp: str = None,
                        filter_model: str = None, filter_dataset: str = None) -> List[Dict[str, Any]]:
     """Загружает все файлы логов из директории с опциональной фильтрацией"""
@@ -82,11 +115,15 @@ def load_benchmark_logs(logs_dir: Path, filter_timestamp: str = None,
     return all_data
 
 
-def extract_dataset_from_logs(log_data_list: List[Dict[str, Any]]) -> Dict[str, List[Any]]:
+async def extract_dataset_from_logs(log_data_list: List[Dict[str, Any]]) -> Dict[str, List[Any]]:
     """Извлекает данные из логов и формирует плоский датасет"""
     
     dataset_dict = defaultdict(list)
     seen_answers = {}  # Для отслеживания дубликатов
+    
+    # Собираем все test_answer для параллельной обработки
+    all_test_answers = []
+    all_record_data = []
     
     for log_item in log_data_list:
         log_file = log_item["file"]
@@ -131,30 +168,57 @@ def extract_dataset_from_logs(log_data_list: List[Dict[str, Any]]) -> Dict[str, 
                 else:
                     seen_answers[test_answer] = True
             
-            # Проверка на циклы генерации
-            is_generation_cycle = detect_generation_cycle(test_answer) if test_answer else False
+            # Сохраняем данные для последующей обработки
+            all_record_data.append({
+                "dialog_id": dialog_id,
+                "dialog": dialog,
+                "test_answer": test_answer,
+                "tokens": tokens,
+                "critical_mistakes": critical_mistakes,
+                "mistakes": mistakes,
+                "additional_mistakes": additional_mistakes,
+                "explanation_critical_mistakes": explanation_critical_mistakes,
+                "explanation_mistakes": explanation_mistakes,
+                "explanation_additional_mistakes": explanation_additional_mistakes,
+                "has_error": has_error,
+                "error_message": error_message,
+                "is_duplicate_test_answer": is_duplicate,
+                "test_model_name": test_model_name,
+                "verbose_test_model_name": verbose_test_model_name,
+                "judge_model_name": judge_model_name,
+                "dataset_name": dataset_name,
+                "timestamp": timestamp,
+                "run_number": run_number
+            })
             
-            # Добавляем запись в датасет
-            dataset_dict["dialog_id"].append(dialog_id)
-            dataset_dict["dialog"].append(dialog)
-            dataset_dict["test_answer"].append(test_answer)
-            dataset_dict["tokens"].append(tokens)
-            dataset_dict["critical_mistakes"].append(critical_mistakes)
-            dataset_dict["mistakes"].append(mistakes)
-            dataset_dict["additional_mistakes"].append(additional_mistakes)
-            dataset_dict["explanation_critical_mistakes"].append(explanation_critical_mistakes)
-            dataset_dict["explanation_mistakes"].append(explanation_mistakes)
-            dataset_dict["explanation_additional_mistakes"].append(explanation_additional_mistakes)
-            dataset_dict["has_error"].append(has_error)
-            dataset_dict["error_message"].append(error_message)
-            dataset_dict["is_duplicate_test_answer"].append(is_duplicate)
-            dataset_dict["is_generation_cycle"].append(is_generation_cycle)
-            dataset_dict["test_model_name"].append(test_model_name)
-            dataset_dict["verbose_test_model_name"].append(verbose_test_model_name)
-            dataset_dict["judge_model_name"].append(judge_model_name)
-            dataset_dict["dataset_name"].append(dataset_name)
-            dataset_dict["timestamp"].append(timestamp)
-            dataset_dict["run_number"].append(run_number)
+            all_test_answers.append(test_answer)
+    
+    # Параллельная проверка на циклы генерации
+    logger.info(f"Проверка {len(all_test_answers)} ответов на циклы генерации...")
+    is_generation_cycle_results = await process_answers_parallel(all_test_answers)
+    
+    # Формируем датасет
+    for i, record_data in enumerate(all_record_data):
+        dataset_dict["dialog_id"].append(record_data["dialog_id"])
+        dataset_dict["dialog"].append(record_data["dialog"])
+        dataset_dict["test_answer"].append(record_data["test_answer"])
+        dataset_dict["tokens"].append(record_data["tokens"])
+        dataset_dict["critical_mistakes"].append(record_data["critical_mistakes"])
+        dataset_dict["mistakes"].append(record_data["mistakes"])
+        dataset_dict["additional_mistakes"].append(record_data["additional_mistakes"])
+        dataset_dict["explanation_critical_mistakes"].append(record_data["explanation_critical_mistakes"])
+        dataset_dict["explanation_mistakes"].append(record_data["explanation_mistakes"])
+        dataset_dict["explanation_additional_mistakes"].append(record_data["explanation_additional_mistakes"])
+        dataset_dict["has_error"].append(record_data["has_error"])
+        dataset_dict["error_message"].append(record_data["error_message"])
+        dataset_dict["is_duplicate_test_answer"].append(record_data["is_duplicate_test_answer"])
+        dataset_dict["is_generation_cycle"].append(is_generation_cycle_results[i])
+        dataset_dict["test_model_name"].append(record_data["test_model_name"])
+        dataset_dict["verbose_test_model_name"].append(record_data["verbose_test_model_name"])
+        dataset_dict["judge_model_name"].append(record_data["judge_model_name"])
+        dataset_dict["dataset_name"].append(record_data["dataset_name"])
+        dataset_dict["timestamp"].append(record_data["timestamp"])
+        dataset_dict["run_number"].append(record_data["run_number"])
     
     total_records = len(dataset_dict["dialog_id"])
     duplicates_count = sum(dataset_dict["is_duplicate_test_answer"])
@@ -594,6 +658,12 @@ async def main_async():
         choices=["lite", "base", "large"],
         help="Фильтровать по типу датасета"
     )
+    parser.add_argument(
+        "--min-parallel-threshold",
+        type=int,
+        default=1000,
+        help="Минимальное количество ответов для запуска параллельной обработки (по умолчанию: 1000)"
+    )
     
     # Subcommands
     subparsers = parser.add_subparsers(dest="command", help="Режим работы")
@@ -664,6 +734,8 @@ async def main_async():
         logger.info(f"Фильтр модели: {args.filter_model}")
     if args.filter_dataset:
         logger.info(f"Фильтр датасета: {args.filter_dataset}")
+    if args.min_parallel_threshold:
+        logger.info(f"Порог параллелизации: {args.min_parallel_threshold}")
     
     # Загрузка логов
     log_data_list = load_benchmark_logs(
@@ -678,7 +750,7 @@ async def main_async():
         return
     
     # Извлечение данных
-    dataset_dict = extract_dataset_from_logs(log_data_list)
+    dataset_dict = await extract_dataset_from_logs(log_data_list)
     
     # Обработка в зависимости от режима
     if is_kto_mode:
