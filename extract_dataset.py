@@ -4,6 +4,7 @@ import hashlib
 import json
 import logging
 import os
+import random
 import re
 import statistics
 from pathlib import Path
@@ -36,14 +37,15 @@ def detect_generation_cycle(text: str) -> bool:
     
     # Регулярка для поиска повторяющихся последовательностей от 20 до 200 символов
     pattern = r'(?![\s.*|+─=\\-]{20,})(.{20,200}?)\1'
-    matches = list(re.finditer(
-            pattern,
-            text,
-            re.DOTALL
-        )
-    )
     
-    return len(matches) > 5
+    # Ранний выход после нахождения достаточного количества повторов
+    count = 0
+    for match in re.finditer(pattern, text, re.DOTALL):
+        count += 1
+        if count > 5:
+            return True
+    
+    return False
 
 
 def load_benchmark_logs(logs_dir: Path, filter_timestamp: str = None,
@@ -375,6 +377,156 @@ async def correct_dataset_mistakes(dataset_dict: Dict[str, List[Any]],
     return dataset_dict
 
 
+def prepare_kto_dataset(dataset_dict: Dict[str, List[Any]], 
+                        balanced: bool = False,
+                        difficulty: Optional[str] = None) -> Dict[str, List[Any]]:
+    """Преобразует датасет в формат KTO (prompt/completion/label)
+    
+    Args:
+        dataset_dict: Исходный датасет
+        balanced: Балансировать ли выборку (50/50 true/false)
+        difficulty: Сложность false примеров для balanced ('easy'/'medium'/'hard')
+    """
+    
+    logger.info("")
+    logger.info("="*70)
+    logger.info("СОЗДАНИЕ KTO ДАТАСЕТА")
+    logger.info("="*70)
+    
+    kto_dict = {
+        "prompt": [],
+        "completion": [],
+        "label": []
+    }
+    
+    # Фильтруем: исключаем циклы генерации
+    valid_indices = []
+    for i in range(len(dataset_dict["dialog_id"])):
+        if not dataset_dict["is_generation_cycle"][i]:
+            valid_indices.append(i)
+    
+    logger.info(f"Исключено примеров с циклами генерации: {len(dataset_dict['dialog_id']) - len(valid_indices)}")
+    logger.info(f"Осталось примеров: {len(valid_indices)}")
+    
+    # Разделяем на true и false примеры
+    true_indices = []
+    false_indices = []
+    
+    for i in valid_indices:
+        # label=True: нет ошибок вообще И нет ошибок выполнения
+        total_mistakes = (
+            dataset_dict["critical_mistakes"][i] +
+            dataset_dict["mistakes"][i] +
+            dataset_dict["additional_mistakes"][i]
+        )
+        
+        if total_mistakes == 0 and not dataset_dict["has_error"][i]:
+            true_indices.append(i)
+        else:
+            false_indices.append(i)
+    
+    logger.info(f"Примеров с label=True: {len(true_indices)}")
+    logger.info(f"Примеров с label=False: {len(false_indices)}")
+    
+    # Применяем балансировку
+    selected_true = true_indices
+    selected_false = false_indices
+    
+    if balanced:
+        logger.info("")
+        logger.info("Применение балансировки датасета...")
+        
+        num_true = len(true_indices)
+        num_false = len(false_indices)
+        
+        if num_true > num_false:
+            logger.warning(f"True примеров ({num_true}) больше чем false ({num_false})")
+            logger.warning("Балансировка будет выполнена по количеству false примеров")
+            target_count = num_false
+            selected_true = random.sample(true_indices, target_count)
+            selected_false = false_indices
+        else:
+            target_count = num_true
+            selected_true = true_indices
+            
+            # Применяем фильтрацию по сложности для false примеров
+            if difficulty:
+                logger.info(f"Фильтрация false примеров по сложности: {difficulty}")
+                
+                # Вычисляем total_mistakes для всех false примеров
+                false_with_mistakes = []
+                for idx in false_indices:
+                    total_mistakes = (
+                        dataset_dict["critical_mistakes"][idx] +
+                        dataset_dict["mistakes"][idx] +
+                        dataset_dict["additional_mistakes"][idx]
+                    )
+                    false_with_mistakes.append((idx, total_mistakes))
+                
+                if difficulty == "easy":
+                    # Большое количество ошибок - сортируем по убыванию
+                    false_with_mistakes.sort(key=lambda x: x[1], reverse=True)
+                    selected_false = [idx for idx, _ in false_with_mistakes[:target_count]]
+                    mistakes_range = [m for _, m in false_with_mistakes[:target_count]]
+                    logger.info(f"  Easy: выбраны примеры с {min(mistakes_range)}-{max(mistakes_range)} ошибками")
+                    
+                elif difficulty == "hard":
+                    # Небольшое количество ошибок - сортируем по возрастанию
+                    false_with_mistakes.sort(key=lambda x: x[1])
+                    selected_false = [idx for idx, _ in false_with_mistakes[:target_count]]
+                    mistakes_range = [m for _, m in false_with_mistakes[:target_count]]
+                    logger.info(f"  Hard: выбраны примеры с {min(mistakes_range)}-{max(mistakes_range)} ошибками")
+                    
+                elif difficulty == "medium":
+                    # Среднее количество ошибок - берем вокруг медианы
+                    mistakes_values = [m for _, m in false_with_mistakes]
+                    median_mistakes = statistics.median(mistakes_values)
+                    
+                    # Вычисляем диапазон: ±25% от медианы
+                    lower_bound = median_mistakes * 0.75
+                    upper_bound = median_mistakes * 1.25
+                    
+                    # Фильтруем примеры в диапазоне
+                    medium_candidates = [
+                        (idx, m) for idx, m in false_with_mistakes 
+                        if lower_bound <= m <= upper_bound
+                    ]
+                    
+                    if len(medium_candidates) >= target_count:
+                        selected_false = [idx for idx, _ in random.sample(medium_candidates, target_count)]
+                        mistakes_range = [m for _, m in medium_candidates[:target_count]]
+                        logger.info(f"  Medium: выбраны примеры с {min(mistakes_range)}-{max(mistakes_range)} ошибками")
+                        logger.info(f"  Медиана ошибок: {median_mistakes:.1f}, диапазон: [{lower_bound:.1f}, {upper_bound:.1f}]")
+                    else:
+                        logger.warning(f"  Недостаточно примеров в среднем диапазоне ({len(medium_candidates)} < {target_count})")
+                        logger.warning(f"  Используется случайная выборка из всех false примеров")
+                        selected_false = random.sample(false_indices, target_count)
+            else:
+                # Случайная выборка без учета сложности
+                selected_false = random.sample(false_indices, target_count)
+        
+        logger.info(f"После балансировки: {len(selected_true)} true, {len(selected_false)} false")
+    
+    # Формируем KTO датасет
+    all_selected = [(idx, True) for idx in selected_true] + [(idx, False) for idx in selected_false]
+    random.shuffle(all_selected)
+    
+    for idx, label in all_selected:
+        kto_dict["prompt"].append(dataset_dict["dialog"][idx])
+        # completion как список с одним сообщением в формате chat
+        kto_dict["completion"].append([{
+            "role": "assistant",
+            "content": dataset_dict["test_answer"][idx]
+        }])
+        kto_dict["label"].append(label)
+    
+    logger.info(f"Итоговый KTO датасет: {len(kto_dict['prompt'])} примеров")
+    logger.info(f"  True: {sum(kto_dict['label'])}")
+    logger.info(f"  False: {len(kto_dict['label']) - sum(kto_dict['label'])}")
+    
+    return kto_dict
+
+
 def save_dataset(dataset_dict: Dict[str, List[Any]], output_path: Path):
     """Сохраняет датасет в формате Hugging Face datasets"""
     
@@ -388,13 +540,23 @@ def save_dataset(dataset_dict: Dict[str, List[Any]], output_path: Path):
         dataset.to_parquet(str(output_path))
         logger.info(f"Датасет сохранен в {output_path} (формат: parquet)")
     elif output_path.suffix == '.arrow':
+        # Удаляем существующую директорию если есть
+        if output_path.exists():
+            import shutil
+            shutil.rmtree(output_path)
+            logger.info(f"Удалена существующая директория {output_path}")
         dataset.save_to_disk(str(output_path))
         logger.info(f"Датасет сохранен в {output_path} (формат: arrow)")
     elif output_path.suffix == '.jsonl':
         dataset.to_json(str(output_path), force_ascii=False)
         logger.info(f"Датасет сохранен в {output_path} (формат: jsonl)")
     else:
-        # По умолчанию сохраняем как arrow
+        # По умолчанию сохраняем как arrow (директория)
+        # Удаляем существующую директорию если есть
+        if output_path.exists():
+            import shutil
+            shutil.rmtree(output_path)
+            logger.info(f"Удалена существующая директория {output_path}")
         dataset.save_to_disk(str(output_path))
         logger.info(f"Датасет сохранен в {output_path} (формат: arrow)")
 
@@ -403,6 +565,8 @@ async def main_async():
     parser = argparse.ArgumentParser(
         description="Извлекает датасет из файлов логов бенчмарка"
     )
+    
+    # Общие параметры
     parser.add_argument(
         "--logs-dir",
         type=str,
@@ -412,8 +576,7 @@ async def main_async():
     parser.add_argument(
         "--output",
         type=str,
-        default="extracted_dataset.parquet",
-        help="Путь для сохранения датасета (по умолчанию: extracted_dataset.parquet)"
+        help="Путь для сохранения датасета"
     )
     parser.add_argument(
         "--filter-timestamp",
@@ -431,16 +594,58 @@ async def main_async():
         choices=["lite", "base", "large"],
         help="Фильтровать по типу датасета"
     )
+    
+    # Subcommands
+    subparsers = parser.add_subparsers(dest="command", help="Режим работы")
+    
+    # Команда: default (без subcommand)
     parser.add_argument(
         "--correct-mistakes",
         action="store_true",
         help="Добавить колонку с исправленными текстами (используя CORRECT_MODEL_* из .env)"
     )
     
+    # Команда: kto
+    kto_parser = subparsers.add_parser(
+        "kto",
+        help="Создать датасет в формате KTO (prompt/completion/label)"
+    )
+    kto_parser.add_argument(
+        "--balanced",
+        action="store_true",
+        help="Балансировать датасет (50/50 true/false примеров)"
+    )
+    kto_parser.add_argument(
+        "--easy",
+        action="store_true",
+        help="При --balanced выбирать false примеры с большим количеством ошибок"
+    )
+    kto_parser.add_argument(
+        "--medium",
+        action="store_true",
+        help="При --balanced выбирать false примеры со средним количеством ошибок"
+    )
+    kto_parser.add_argument(
+        "--hard",
+        action="store_true",
+        help="При --balanced выбирать false примеры с малым количеством ошибок"
+    )
+    
     args = parser.parse_args()
     
     logs_dir = Path(args.logs_dir)
-    output_path = Path(args.output)
+    
+    # Определяем режим работы и output path
+    is_kto_mode = args.command == "kto"
+    
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        # Выбираем дефолтное имя в зависимости от режима
+        if is_kto_mode:
+            output_path = Path("kto_dataset.parquet")
+        else:
+            output_path = Path("extracted_dataset.parquet")
     
     if not logs_dir.exists():
         logger.error(f"Директория {logs_dir} не существует")
@@ -449,6 +654,9 @@ async def main_async():
     logger.info("Начало извлечения датасета")
     logger.info(f"Директория логов: {logs_dir}")
     logger.info(f"Выходной файл: {output_path}")
+    
+    if is_kto_mode:
+        logger.info("Режим: KTO датасет")
     
     if args.filter_timestamp:
         logger.info(f"Фильтр timestamp: {args.filter_timestamp}")
@@ -472,18 +680,43 @@ async def main_async():
     # Извлечение данных
     dataset_dict = extract_dataset_from_logs(log_data_list)
     
-    # Исправление ошибок (если включен флаг)
-    if args.correct_mistakes:
-        logger.info("")
-        logger.info("="*70)
-        logger.info("ИСПРАВЛЕНИЕ ОШИБОК")
-        logger.info("="*70)
+    # Обработка в зависимости от режима
+    if is_kto_mode:
+        # Проверка флагов сложности
+        difficulty_flags = sum([args.easy, args.medium, args.hard])
+        if difficulty_flags > 1:
+            logger.error("Ошибка: можно указать только один флаг сложности (--easy, --medium, или --hard)")
+            return
         
-        cache_dir = Path("cache/correct_mistakes")
-        dataset_dict = await correct_dataset_mistakes(dataset_dict, log_data_list, cache_dir)
-    
-    # Сохранение датасета
-    save_dataset(dataset_dict, output_path)
+        if difficulty_flags > 0 and not args.balanced:
+            logger.error("Ошибка: флаги сложности (--easy/--medium/--hard) работают только с --balanced")
+            return
+        
+        # Определяем сложность
+        difficulty = None
+        if args.easy:
+            difficulty = "easy"
+        elif args.medium:
+            difficulty = "medium"
+        elif args.hard:
+            difficulty = "hard"
+        
+        # Создаем KTO датасет
+        kto_dict = prepare_kto_dataset(dataset_dict, args.balanced, difficulty)
+        save_dataset(kto_dict, output_path)
+    else:
+        # Исправление ошибок (если включен флаг)
+        if args.correct_mistakes:
+            logger.info("")
+            logger.info("="*70)
+            logger.info("ИСПРАВЛЕНИЕ ОШИБОК")
+            logger.info("="*70)
+            
+            cache_dir = Path("cache/correct_mistakes")
+            dataset_dict = await correct_dataset_mistakes(dataset_dict, log_data_list, cache_dir)
+        
+        # Сохранение датасета
+        save_dataset(dataset_dict, output_path)
     
     logger.info("Готово!")
 
