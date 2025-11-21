@@ -114,7 +114,7 @@ def generate_leaderboard():
     leaderboard.sort(key=lambda x: x["total"])
     
     # Находим максимальный score для прогресс-бара
-    max_score = max([entry["total"] for entry in leaderboard]) if leaderboard else 100
+    max_score = 4.0
     
     # Рендерим шаблон
     print("Генерация HTML...")
