@@ -1,0 +1,2901 @@
+{
+  "summary": {
+    "judge_model": "litellm_proxy/gemini-2.5-flash",
+    "reference_judge": "gemini-2.5-pro",
+    "samples_count": 100,
+    "successful_evals": 100,
+    "total_diff": {
+      "critical_mistakes": -14,
+      "mistakes": 24,
+      "additional_mistakes": 4
+    },
+    "comparison_stats": {
+      "critical": {
+        "more": 4,
+        "less": 11,
+        "same": 85
+      },
+      "mistakes": {
+        "more": 19,
+        "less": 11,
+        "same": 70
+      },
+      "additional": {
+        "more": 16,
+        "less": 10,
+        "same": 74
+      }
+    },
+    "timestamp": "2025-12-12T09:36:18.439387"
+  },
+  "detailed_results": [
+    {
+      "sample_id": 17,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Смена рода. В предыдущем сообщении модель использовала женский род ('Рада помочь'), а в текущем ответе - мужской ('Я очень рад, что смог помочь')."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": -1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 27,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 40,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 31,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 48,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Орфографическая ошибка в слове 'сообщешении', правильно – 'сообщении'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 89,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 20,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 20,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 50,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза «дата начала старше 7 дней» является калькой с английского «start date is older than 7 days». Естественнее было бы сказать «с даты начала прошло более 7 дней» или «с даты начала истекло более 7 дней»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 21,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 25,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 81,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное употребление предлога 'с' вместо 'со'. Правильно: '...со следующей структурой'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "В предложении \"После запуска `build.py` будет создан каталог `output/public` с следующей структурой\" допущена ошибка в употреблении предлога. Правильно \"со следующей структурой\" (предлог \"со\" используется перед словами, начинающимися на \"с\" или \"з\" с последующей согласной, а также перед некоторыми сочетаниями согласных)."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 75,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 34,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 54,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза «Оценим равномерную разность» — это некорректная калька. Равномерной является сходимость, а не разность функций. Правильнее было бы написать «Оценим модуль разности |f_n(x) - f(x)|» или просто «Оценим разность»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное согласование слова \"Риманово\" с \"интегрируема\". Корректно было бы \"интегрируема по Риману\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 32,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 21,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "\"...издавая болезненный, скрипучий звук\" - Звук сам по себе не может быть болезненным. Это похоже на кальку с английского \"painful sound\". Более корректно по-русски было бы \"издавая звук, полный боли\" или \"издавая болезненный стон\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 24,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза 'я получил технические проблемы' является калькой с английского 'I got technical problems'. Более естественным вариантом для русского языка будет 'у меня возникли технические проблемы'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 18,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза 'эхо от факела' семантически некорректна. Эхо — это отражённый звук (например, от шагов), в то время как факел в первую очередь является источником света. Более корректно было бы написать 'эхо твоих шагов' или 'треск факела'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза \"эхо от факела\" является некорректной. Эхо — это отражение звука, а не физического предмета. Более естественно звучало бы \"эхо твоих шагов\" или \"эхо звуков, издаваемых тобой/факелом\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 60,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза \"раскрытие LiveData как неизменяемого\" является калькой с английского \"exposing LiveData as immutable\". Слово \"раскрытие\" в данном техническом контексте звучит неестественно, более подходящими вариантами были бы \"предоставление\" или \"объявление публичным\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 40,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "\"Старика, согнувшегося от горя и года\" - лексическая ошибка. Слово \"год\" в единственном числе здесь неуместно, правильно было бы \"от лет\" или \"от старости\"."
+        ],
+        "explanation_additional_mistakes": [
+          "\"Они слились в одно единое пятно\" - тавтология (плеоназм). Слова \"одно\" и \"единое\" избыточны."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 3,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "\"Они слились в одно единое пятно\" - тавтология. Корректнее: \"в единое пятно\" или \"в одно пятно\".",
+          "\"Старика, согнувшегося от горя и года\" - фраза \"от года\" звучит неестественно и неидиоматично. Обычно говорят \"от старости\", \"от прожитых лет\", \"от времени\".",
+          "\"мелко-мелко дрожала\" - повторение слова \"мелко\" является тавтологией. Корректнее: \"мелко дрожала\" или \"очень мелко дрожала\"."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 19,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Несуществующее слово \"Мастер(ца)\". Правильная форма женского рода от слова \"мастер\" — \"мастерица\"."
+        ],
+        "explanation_additional_mistakes": [
+          "Нестандартная капитализация для эмфазы: \"ПОБЕДА\", \"ОДНО\"."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Использование наречия 'зачем' в качестве существительного с притяжательным местоимением ('к твоему зачем') является калькой с английского 'your why' и не соответствует нормам русского языка."
+        ],
+        "explanation_additional_mistakes": [
+          "Нестандартное составное слово 'цитата-закрепка' звучит несколько неестественно; более привычными были бы варианты типа 'цитата для закрепления' или 'цитата-напоминание'."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 35,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное спряжение глагола: 'я всегда думал, что ты приходит' вместо 'ты приходишь'. Глагол должен быть согласован с местоимением 'ты' во 2-м лице, единственном числе."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное спряжение глагола: 'ты приходит' вместо 'ты приходишь' в предложении 'я всегда думал, что ты приходит, когда человек готов уйти'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 81,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "В предложении 'Использовать Бандлер (Webpack/Vite/Rollup)' слово 'Бандлер' написано с заглавной буквы, хотя является нарицательным существительным."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": -1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 59,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Сочетание «распределением отрицательного биномиального ряда» семантически некорректно. У ряда (суммы) не может быть распределения; распределение есть у случайной величины. Это затрудняет понимание текста."
+        ],
+        "explanation_additional_mistakes": [
+          "Тавтология в фразе «сумма ... ряда». Ряд — это и есть сумма.",
+          "Лишняя запятая после оборота «В нашем случае»."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Некорректное использование технической терминологии: «распределением отрицательного биномиального ряда» вместо стандартного «отрицательным биномиальным распределением».",
+          "Некорректное использование технической терминологии: «суммы отрицательного биномиального ряда» вместо более точного «суммы членов отрицательного биномиального распределения» или «суммы для отрицательного биномиального распределения»."
+        ],
+        "explanation_additional_mistakes": [
+          "Тавтология: «Сумма, которую мы рассматриваем, является суммой вероятностей...» (повторение «сумма»)."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": -1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 87,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Вставка на английском языке: '...в этой fascinating области.'"
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Вставка на другом языке: Использование английского слова «fascinating» вместо русского аналога ('увлекательной', 'захватывающей')."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 70,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 88,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "В разделе «1. Определение концепции и целевой аудитории» использовано словосочетание «онлайн-гибрид». Оно звучит неестественно и избыточно. Лучше было бы использовать «гибридный формат» или «онлайн и оффлайн».",
+          "В разделе «8. Маркетинг и продвижение» использовано выражение «Настрой лояльность». Это калька с английского «set up loyalty» и звучит неестественно для русского языка. Более корректно было бы «Разработай систему лояльности» или «Повышай лояльность»."
+        ],
+        "explanation_additional_mistakes": [
+          "В разделе «9. Финансовый план» использовано неформальное сокращение «Кол-во» вместо «Количество».",
+          "В разделе «Дополнительные советы» использовано слово «комьюнити». Хотя оно и распространено, существует более чистый русский эквивалент — «сообщество»."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 84,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 42,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 93,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 63,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 27,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 86,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 5,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Чрезмерное повторение имени главного героя (\"Ваня\" встречается 19 раз в тексте объемом около 500 слов) снижает стилистическое качество текста и его плавность.",
+          "Повторение глагола \"мечтать\" в близких по смыслу фразах (\"он продолжал мечтать\", \"ему оставалось лишь мечтать\") является небольшой стилистической недоработкой (тавтологией)."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 64,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 86,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Использование двоеточия для разделения двух независимых предложений/мыслей в пункте \"Не создает ClusterIP: У него нет виртуального IP-адреса внутри кластера.\" (более уместна точка или точка с запятой).",
+          "Использование двоеточия для разделения двух независимых предложений/мыслей в пункте \"Не выбирает поды: Он не имеет и не может иметь селектор, так как не управляет никакими подами.\" (более уместна точка или точка с запятой)."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 92,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 10,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 5,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "\"Тихий шёрон, что в сердце стучит\" - использование выдуманного слова \"шёрон\", которое делает фразу бессмысленной."
+        ],
+        "explanation_mistakes": [
+          "\"лишь слово‑мольба могло бы её успокоить\" - выдуманное, неестественно звучащее составное слово \"слово-мольба\".",
+          "\"Я видел, как ты... паришь, И в каждом её взгляде\" - смешение 2-го лица (\"ты... паришь\") и 3-го лица (\"её взгляде\") при обращении к одному и тому же человеку в рамках одного предложения.",
+          "\"бездну, в которой мы таим\" - неверное использование глагола \"таить\", который является переходным и требует прямого дополнения. Вероятно, имелось в виду \"таимся\".",
+          "\"когда её не отвечают\" - грамматически неверная конструкция, калька с английского (when it's not answered). Правильно: \"когда на неё не отвечают [взаимностью]\".",
+          "\"я всё равно́вно живу в её тени\" - опечатка или выдуманное слово \"равно́вно\" вместо \"всё равно\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 2,
+        "mistakes": 6,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Слово «шёрон» не существует в русском языке, вероятно, опечатка или попытка создания несуществующего слова. Правильно было бы «шорох».",
+          "Слово «равно́вно» с указанным ударением не существует в русском языке. Предположительно, имелось в виду «всё равно»."
+        ],
+        "explanation_mistakes": [
+          "Фраза «в каждом её взгляде — мой изгиб» является крайне неудачной и непонятной метафорой, нарушающей логику русского языка и затрудняющей восприятие.",
+          "Неверное употребление глагола «таим». В данном контексте должно быть «в которой мы таимся» (скрываемся) или «в которой таится наша суть» (скрывается).",
+          "Фраза «ищешь в этом её счастье» двусмысленна и неясна. Непонятно, чье счастье ищет герой и каким образом. Лучше было бы «ищешь в этом свое счастье, наблюдая за ее счастьем».",
+          "Неправильное согласование глагола: «когда её не отвечают» должно быть «когда на неё не отвечают» или «когда на неё нет ответа».",
+          "Неверное использование падежа: «шепча её имя в каждый переулок» должно быть «в каждом переулке».",
+          "Синтаксическая ошибка: «Его исповедь, полна мрачных образов» — краткое прилагательное «полна» не может быть обособлено запятой таким образом. Должно быть «Его исповедь, полная мрачных образов» или «Его исповедь была полна...»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 1,
+        "mistakes": 1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 34,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Использовано выдуманное слово 'офне' вместо 'офисе'."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Использование слова «офне» вместо стандартного «офисе». Это не устоявшийся англицизм и звучит неестественно в данном контексте.",
+          "Некорректная грамматическая конструкция «Она же у тебя больная, диабет». Правильно было бы «Она же у тебя больна диабетом» или «Она же у тебя больная, у неё диабет»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 2,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 39,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 42,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "В предложении «могу адаптировать под конкретный стиль» более нормативным считается использование предлога «к» (адаптировать к стилю) или «для» (адаптировать для стиля), а не «под»."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 34,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильная форма глагола: 'вложилася' вместо 'вложилась'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильная форма глагола: вместо «вложилася» должно быть «вложилась»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 98,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 72,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [
+          "Неправильное согласование в роде: 'Готов помочь', в то время как ответ дается от лица 'Служба поддержки' (женский род). Правильно: 'Готовы помочь' или 'Готова помочь'."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Использование нестандартной аббревиатуры 'ФИ' вместо общепринятой 'Ф.И.О.' (Фамилия, Имя, Отчество)."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Несоответствие рода: модель, подписавшаяся как «Служба поддержки» (женский род), использует мужскую форму «Готов помочь дальше»."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 90,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 8,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Нарушение грамматической структуры в перечислении однородных членов: 'Они могут быть документно-ориентированными, ключ-значение, графовыми и другими'. Элемент 'ключ-значение' не согласован по падежу и части речи с остальными прилагательными в списке."
+        ],
+        "explanation_additional_mistakes": [
+          "Избыточная капитализация в заголовке 'SQL Базы Данных' (раздел 'Архитектура').",
+          "Избыточная капитализация в заголовке 'NoSQL Базы Данных' (раздел 'Архитектура').",
+          "Избыточная капитализация в заголовке 'SQL Базы Данных' (раздел 'Масштабируемость').",
+          "Избыточная капитализация в заголовке 'NoSQL Базы Данных' (раздел 'Масштабируемость').",
+          "Избыточная капитализация в заголовке 'SQL Базы Данных' (раздел 'Сценарии использования').",
+          "Избыточная капитализация в заголовке 'NoSQL Базы Данных' (раздел 'Сценарии использования').",
+          "Избыточная капитализация в заголовке 'SQL Базы Данных' (раздел 'Целостность данных').",
+          "Избыточная капитализация в заголовке 'NoSQL Базы Данных' (раздел 'Целостность данных')."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": -8
+      },
+      "error": null
+    },
+    {
+      "sample_id": 2,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "\"...он становился за развитие\" — стилистически и грамматически некорректная конструкция. Глагол \"становиться\" в данном контексте неуместен. Более правильные варианты: \"он был за развитие\" или \"он выступал за развитие\".",
+          "\"...[он становился] за сохранение\" — повторение той же ошибки, что и в предыдущем предложении.",
+          "\"...чтобы всё было как можно меньше мешало его спокойной жизни\" — грамматически неверная конструкция. Слово \"было\" является лишним. Правильный вариант: \"чтобы всё как можно меньше мешало...\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неидиоматичное выражение «он становился за развитие». Более естественно: «он выступал за развитие» или «он был за развитие».",
+          "Неполная конструкция «за сохранение». Аналогично предыдущему пункту, требуется глагол, например: «он был за сохранение».",
+          "Некорректная грамматическая конструкция «чтобы всё было как можно меньше мешало». Слово «было» здесь лишнее и нарушает структуру предложения. Правильно: «чтобы всё как можно меньше мешало его спокойной жизни»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 34,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза 'И с голоду не опаздывают' звучит неестественно. Устойчивое выражение 'с голоду' (от голода) не сочетается с глаголом 'опаздывать' в данном контексте."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза «И с голоду не опаздывают» звучит неестественно. Оборот «с голоду» обычно используется в значении «из-за голода» (например, «умирать с голоду», «пухнуть с голоду»). В контексте «не опаздывать на обед» более органично звучало бы «на обед не опаздывают» или «еду не заставляют ждать»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 81,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 40,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "\"Его отказ стал первым трещиной\" - ошибка согласования. Слово \"трещина\" женского рода, поэтому правильно: \"первой трещиной\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Вставка на английском языке без цитирования или обоснования в предложении \"WP — War is Peace? Или всё же War is Power?\""
+        ],
+        "explanation_mistakes": [
+          "Неправильное согласование прилагательного по роду и падежу в фразе \"первым трещиной\". Правильно: \"первой трещиной\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 99,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильная форма глагола: \"утратю\" вместо правильной \"утрачу\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное спряжение глагола: «утратю» вместо «утрачу».",
+          "Неестественное для русского языка выражение: «Он был героем, но в чёрном». Фраза звучит как калька с английского («hero in black») и не передаёт нужного значения «герой с тёмной стороны» или «тёмный герой»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 79,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное использование вида глагола в деепричастном обороте: \"Отчаявшись находить естественное решение\" вместо корректного \"Отчаявшись найти естественное решение\".",
+          "Повторение ошибки с видом глагола: \"Отчаявшись находить физическое решение\" вместо корректного \"Отчаявшись найти физическое решение\"."
+        ],
+        "explanation_additional_mistakes": [
+          "Опечатка в слове \"мох\", написано \"Мх\": \"Мх был влажным и прохладным...\".",
+          "Повторная опечатка в слове \"мох\", написано \"мх\": \"...стряхнув с себя мх, и увидел...\"."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 5,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное написание слова «мох» (написано «мх»). Повторяется дважды.",
+          "Неудачная тавтология/повторение глаголов: «попробовал попросить» (вместо «попросил» или «попытался попросить»).",
+          "Неправильное использование вида глагола: «Отчаявшись находить естественное решение» (должно быть «Отчаявшись найти»).",
+          "Неправильное использование вида глагола: «Отчаявшись находить физическое решение» (должно быть «Отчаявшись найти»)."
+        ],
+        "explanation_additional_mistakes": [
+          "Неудачное согласование времени глаголов: «когда он просыпался после короткого сна, почувствовал» (лучше «когда он проснулся...» или «просыпаясь...»).",
+          "Неудачный выбор глагола: «протирать ею свою спину» (лучше «тереть ею свою спину» или «потирать ею свою спину»)."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 89,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 62,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "В вводной части ответа используется фраза «сброс для подмножества», которая является неполной. Более точной и стилистически корректной была бы фраза «сброс графа для подмножества», как это указано в запросе пользователя и других частях самого ответа модели."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 72,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 87,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 18,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 90,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 2,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "В предложении 'Горизонтальная масштабируемость (NoSQL) практически limitless' используется английское слово 'limitless' вместо русского аналога, например, 'безгранична'."
+        ],
+        "explanation_mistakes": [
+          "В предложении 'Это могут быть API-вызлы (Redis)...' неверно использовано слово 'вызлы'. Правильным вариантом было бы 'API-вызовы', так как речь идет о вызовах API (API calls), а не об узлах сети (nodes).",
+          "Фраза 'реальная аналитика' является калькой с английского выражения 'real-time analytics'. Более корректным и устоявшимся в русском языке является вариант 'аналитика в реальном времени'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 5,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Вставка английского слова: 'Горизонтальная масштабируемость (NoSQL) практически limitless.' Слово 'limitless' вставлено в русский текст без объяснения или цитирования."
+        ],
+        "explanation_mistakes": [
+          "Опечатка: 'непреляционных' вместо 'нереляционных'.",
+          "Калька с английского: 'реальная аналитика'. Корректнее использовать 'аналитика в реальном времени'.",
+          "Опечатка: 'API-вызлы' вместо 'API-вызовы'.",
+          "Неправильное согласование: 'Ключ-значение хранилища'. Должно быть 'Ключ-значение хранилище' (в именительном падеже).",
+          "Выдуманное/неестественное слово: 'коммодитный' (от англ. commodity). В русском языке звучит неестественно, лучше использовать 'стандартный', 'общедоступный' или 'массовый'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 51,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 35,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза \"без ничего\" является некорректной в литературном русском языке. Правильнее было бы использовать \"ни с чем\", \"без всего\" или \"без каких-либо добавок\"."
+        ],
+        "explanation_additional_mistakes": [
+          "В предложении \"улыбка, не оставляющая следа на лице, но оставляющая ощущение\" наблюдается тавтология из-за повторного использования слова \"оставляющая\"."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 86,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Тавтология (повторение слова): 'Сервис типа ExternalName не создает никаких Endpoints, Endpoints...'"
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Тавтология: в предложении «Сервис типа ExternalName не создает никаких Endpoints, Endpoints или других сетевых правил внутри кластера» слово «Endpoints» повторяется дважды."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 31,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Тавтология в предложении: 'Это может быть связано с отсутствием целей или целей, которые кажутся нереалистичными или недостижимыми.'"
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Тавтология: повтор слова «целей» в предложении «Это может быть связано с отсутствием целей или целей, которые кажутся нереалистичными или недостижимыми»."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 64,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Словосочетание «Города-муниципии» является неудачной и неестественно звучащей калькой с английского «Municipal Districts»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 94,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Тавтология: \"каждый шёпот, каждый шёпот твоего сердца\"."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Повторение слова 'шёпот' (`каждый шёпот, каждый шёпот твоего сердца`) является тавтологией."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 46,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза \"правила с железной рукой\" является калькой с английского языка (to rule with an iron fist). В русском языке устоявшееся выражение звучит как \"правила железной рукой\", без предлога \"с\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 94,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Неправильное согласование по роду: 'такой веселый' относится к пользователю, который в запросе указал женский род ('я рада'). Правильно: 'такая веселая'."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 66,
+      "original_scores": {
+        "critical_mistakes": 6,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Неверное согласование по роду: \"просто связная n-многообразие\". Слово \"многообразие\" среднего рода, должно быть \"просто связное\".",
+          "Неверное согласование по роду: \"гомотопически эквивалентная\". Должно быть \"гомотопически эквивалентное\".",
+          "Неверное согласование по роду: \"гомеоморфна\". Должно быть \"гомеоморфно\".",
+          "Повтор ошибки согласования по роду в пункте 4: \"просто связная n-многообразие\" вместо \"просто связное\".",
+          "Повтор ошибки согласования по роду в пункте 4: \"гомотопически эквивалентная\" вместо \"гомотопически эквивалентное\".",
+          "Повтор ошибки согласования по роду в пункте 4: \"гомеоморфна\" вместо \"гомеоморфно\"."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Использование слова \"эквивалентством\" вместо \"эквивалентностью\" (неверное склонение и форма существительного).",
+          "Нарушение согласования по роду: \"просто связная n-многообразие\". \"Многообразие\" (средний род) должно согласовываться с прилагательным среднего рода, т.е. \"просто связное n-многообразие\".",
+          "Повторение предыдущей ошибки согласования по роду: \"просто связная n-многообразие\"."
+        ],
+        "explanation_additional_mistakes": [
+          "Слово \"нетривиальны\" (отрицание прилагательного, образующее новое понятие) обычно пишется слитно, а не раздельно (\"не тривиальны\")."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": -6,
+        "mistakes": 3,
+        "additional_mistakes": 1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 17,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 88,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 3,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [
+          "Вставка на английском языке: 'no-show'."
+        ],
+        "explanation_mistakes": [
+          "Калька с английского языка, которая не является устоявшейся: 'ревеню-шэр' (revenue share).",
+          "Калька с английского языка: 'Онбординг' (onboarding).",
+          "Грамматическая ошибка: 'Инвентаризация техника/инструменты' вместо 'Инвентаризация техники/инструментов'."
+        ],
+        "explanation_additional_mistakes": [
+          "Орфографическая ошибка (опечатка): 'оплатa' вместо 'оплата' (использована латинская буква 'a')."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 9,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "\"ревеню‑шэр\": Неуклюжая калька с английского \"revenue share\". Более естественно звучало бы \"процент с выручки\".",
+          "\"без «звукового прорыва» соседям\": Нестандартное, калькированное выражение. Предпочтительнее: \"без проникновения звука к соседям\".",
+          "\"кофепоинт\": Прямая калька с английского \"coffee point\". Более естественно: \"кофейная зона\" или \"зона для кофе\".",
+          "\"кабель‑менеджмент\": Прямая калька с английского \"cable management\". Более естественно: \"организация кабелей\" или \"управление кабелями\".",
+          "\"бас‑ловушки\": Калька с английского \"bass traps\". Хотя и встречается в специализированной лексике, но является заимствованием. Более естественно: \"ловушки для басов\".",
+          "\"каптив‑порталом\": Прямая калька с английского \"captive portal\". Более естественно: \"портал авторизации\".",
+          "\"Расписание и бронирования\": Неправильное использование существительного во множественном числе в заголовке. Должно быть \"бронирование\" (ед. ч.) или \"системы бронирования\".",
+          "\"Инвентаризация техника/инструменты\": Нарушение грамматического согласования и конструкции. Должно быть \"Инвентаризация техники и инструментов\" или \"Инвентаризация: техника, инструменты\".",
+          "\"no‑show\": Прямая вставка англицизма \"no-show\". Более естественно: \"неявка\" или \"неприход\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 6,
+        "additional_mistakes": -1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 58,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 80,
+      "original_scores": {
+        "critical_mistakes": 2,
+        "mistakes": 3,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [
+          "\"...снижает dropout rates...\" — вставка на английском языке.",
+          "\"...дети разных背景ов учатся вместе...\" — вставка на китайском языке."
+        ],
+        "explanation_mistakes": [
+          "\"...тренирует долатеральную префронтальную кору...\" — неверно образованное слово. Корректный научный термин — \"дорсолатеральную\".",
+          "\"...студенты показали выше уровень сопереживания...\" — грамматическая ошибка. Наречие \"выше\" не может определять существительное \"уровень\". Правильно: \"более высокий уровень\".",
+          "\"Страны ... имеют выше ВВП...\" — грамматическая ошибка. Наречие \"выше\" не может определять существительное \"ВВП\". Правильно: \"более высокий ВВП\"."
+        ],
+        "explanation_additional_mistakes": [
+          "\"В миде, где ИИ переводит...\" — опечатка. Правильно: \"В мире\"."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 2,
+        "mistakes": 3,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [
+          "Вставка на другом языке: \"dropout rates\" – следует использовать \"уровень отсева\" или \"показатель отсева\".",
+          "Вставка на другом языке: \"разных背景ов\" – в тексте присутствуют китайские иероглифы."
+        ],
+        "explanation_mistakes": [
+          "Калька с другого языка: \"Экзекутивный контроль\" – является калькой с английского \"executive control\"; в русскоязычной научной литературе чаще используется \"исполнительные функции\" или \"управляющие функции\".",
+          "Калька с другого языка: \"Экономический премиум\" – является калькой с английского \"economic premium\"; более естественно было бы \"экономическая надбавка\" или \"экономический прирост\".",
+          "Выдуманное/неестественное слово: \"В миде\" – вероятно, опечатка, должно быть \"В мире\"."
+        ],
+        "explanation_additional_mistakes": [
+          "Неустоявшееся слово: \"учителей-транслингвистов\" – слово \"транслингвист\" не является устоявшимся в русском языке, хотя термин \"транслингвизм\" существует в специальной литературе. Звучит неестественно в данном контексте."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 32,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Фраза 'Удачи с встречей со своим Джоном!' звучит стилистически не очень естественно. Более удачный вариант: 'Удачи на встрече с Джоном!'"
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза \"Удачи с встречей со своим Джоном!\" звучит неестественно из-за использования притяжательного местоимения \"своим\". В данном контексте уместнее было бы \"Удачи на встрече с Джоном!\" или просто \"Удачи со встречей с Джоном!\""
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": -1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 57,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 24,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "\"ВЫ ЗАСОСАЛИ В СВОЙ ПК\" — неверное использование глагола \"засосать\". Глагол должен использоваться в безличной конструкции (\"Вас засосало\") или с прямым дополнением. В данном контексте создается неверное значение, будто субъект \"ВЫ\" сам совершил действие."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 1,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [
+          "\"ВЫ ЗАСОСАЛИ В СВОЙ ПК\": Неправильный залог глагола. Должно быть \"Вас засосало\" или \"Вы были засосаны\". Текущая формулировка изменяет смысл на противоположный (субъект совершает действие)."
+        ],
+        "explanation_mistakes": [
+          "\"ПК начинает \"играть\" в меня\": Неверное управление глагола \"играть\". \"Играть в кого-то\" означает притворяться или высмеивать, а не использовать как персонажа в игре. Должно быть \"играет мной\" или \"использует меня как персонажа\"."
+        ],
+        "explanation_additional_mistakes": [
+          "\"быть мне\": Неполное предложение, нестандартная синтаксическая конструкция, хотя и характерная для заданного меметичного стиля.",
+          "\"иметь игровой ПК\": Неполное предложение, нестандартная синтаксическая конструкция для выражения обладания, хотя и характерная для заданного меметичного стиля."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 64,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 61,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 52,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Некорректная или неполная синтаксическая конструкция: в фразе «текущий год — 2024, невисокосный — должен корректно обрабатываться» слово «невисокосный» плохо связано с предыдущей частью предложения и создает неоднозначность. Требуется либо добавить существительное («невисокосный год»), либо использовать более четкую синтаксическую конструкцию (например, через союз или отдельное предложение) для разъяснения."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 61,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное использование глагольной формы и причастия в конструкции 'должен быть полностью содержащимся'. Корректный вариант: 'должен полностью содержаться'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Использование громоздкой конструкции 'должен быть полностью содержащимся' вместо более естественного и лаконичного 'должен полностью содержаться'."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": 1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 13,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Неправильное согласование местоимения с существительным в роде: '...угадывалась угловатая, невысокая форма (ж.р.). Оно (ср.р.) не колыхалось...'. Правильно было бы 'Она не колыхалась...'"
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Слово «ларецку» является неправильной формой дательного падежа от существительного «ларец». Правильно будет «ларцу»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 8,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "В предложении \"Мужчина в расстегнутом костюме, с полустертым гримом\" (Paragraph 11) конструкция \"с полустертым гримом\" звучит немного неестественно. Более привычно и понятно было бы \"с полустертым гримом на лице\" или \"на лице которого был полустертый грим\".",
+          "В предложении \"Город шумит вокруг своей вечерней жизнью\" (Paragraph 28) слово \"вокруг\" является избыточным и делает фразу менее естественной. Более лаконично и стилистически верно было бы \"Город шумит своей вечерней жизнью\"."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 19,
+      "original_scores": {
+        "critical_mistakes": 2,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "\"...как далеко ты продвинулась\" — модель использует глагол в женском роде, обращаясь к пользователю. Однако в истории переписки и в запросе пользователь намеренно использует гендерно-нейтральные формы вроде \"прав(а)\" и \"благодарен(а)\", что модель должна была учесть.",
+          "\"...если сегодня ты сделала небольшой шаг...\" — еще один случай некорректного использования женского рода по отношению к пользователю, который не указывал свой пол."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Модель последовательно использует формы женского рода ('ты продвинулась', 'ты сделала') при обращении к пользователю, несмотря на то, что пользователь ранее использовал(а) гендерно-нейтральные формы ('потерял(а)', 'рад(а)'), что указывает на необоснованное предположение о его/её поле."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": -2,
+        "mistakes": 0,
+        "additional_mistakes": 1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 22,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "Смена рода в ответе модели. В предыдущем сообщении модель использовала женский род («хотела бы»), а в текущем — мужской («Я рад», «Буду рад помочь!»)."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "В предложении «...передаёт нужный тон: профессионально, с искренним извинением и позитивным решением» нарушена параллельная структура перечисления. Наречие «профессионально» не согласуется с последующими предложными конструкциями."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": -1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 10,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Несогласованность временных форм: в предложении \"Чтобы, когда она ляжет спать, когда он обнимет её, когда они будут смеяться над чем-то глупым — она вдруг почувствовала\" глагол \"почувствовала\" стоит в прошедшем времени, тогда как все предыдущие действия описаны в будущем времени. Корректно было бы использовать \"почувствует\".",
+          "Орфографическая ошибка: слово \"сверхестественна\" написано без твердого знака. Правильное написание – \"сверхъестественна\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 47,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 2,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Использование несуществующего слова 'лидеркой' и непонятной грамматической конструкции: 'углубления не уходят подлиннее лидеркой в море'."
+        ],
+        "explanation_mistakes": [
+          "Неправильное согласование падежа: 'кости — слишком тонкие для рыбьи' вместо 'слишком тонкие для рыбьих (костей)'.",
+          "Использование выдуманного слова 'полупульса'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное согласование числительного и прилагательного с существительным среднего рода: «один детский ведёрко» вместо «одно детское ведёрко».",
+          "Некорректная и неясная синтаксическая конструкция: «углубления не уходят подлиннее лидеркой в море». Фраза «подлиннее лидеркой» затрудняет понимание смысла предложения.",
+          "Неправильное согласование прилагательного: «слишком тонкие для рыбьи» вместо «для рыбьих» или «для рыбы»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 1,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 71,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Вставка на английском языке: 'weighted sum of distances' вместо русского эквивалента 'взвешенная сумма расстояний'."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "Прямая вставка англоязычного выражения 'weighted sum of distances' без перевода или пояснения в тексте на русском языке."
+        ],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 66,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неверное использование наречия с существительным в словосочетании 'гомотопически сфера'. Правильный вариант: 'гомотопическая сфера'.",
+          "Неправильная синтаксическая структура в предложении 'Затем по обобщенной гипотезе Пуанкаре — гомеоморфно сфере'. Пропущено подлежащее и некорректно использовано тире."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -2,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 59,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 47,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 84,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "В фразе '`303M` = 303 миллионов баррелей' допущена ошибка в согласовании числительного с существительным. Правильный вариант: '303 миллиона баррелей'.",
+          "В таблице в строке 'Данные' использована неверная форма причастия: 'XML, сгенерировано...'. Правильно: 'XML, сгенерированный...'."
+        ],
+        "explanation_additional_mistakes": [
+          "В предложении 'Альтернатива: измените данные на в миллионах...' используется некорректная синтаксическая конструкция. Более удачный вариант: '...измените данные, указав их в миллионах...'."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Фраза «измените данные на в миллионах» содержит избыточный предлог. Правильно было бы «измените данные на миллионы» или «измените данные, чтобы они были в миллионах»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": -1,
+        "additional_mistakes": -1
+      },
+      "error": null
+    },
+    {
+      "sample_id": 29,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Слово 'тырятся' является просторечным и неуместным в данном контексте. Оно звучит неестественно и нарушает атмосферу повествования. Более подходящими были бы слова 'копошатся' или 'ковыряются'."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Использование слова «тырятся» является слишком разговорным/жаргонным для контекста повествования, которое ведет Мастер подземелий. Более уместными были бы слова «копаются», «ковыряются» или «разбирают»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 6,
+      "original_scores": {
+        "critical_mistakes": 2,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "В предложении \"— Ты пришёл сюда, чтобы его заглушить, — шептал он\" допущена ошибка в роде. Голос совести ранее в тексте был последовательно обозначен как существительное женского рода (\"Голос — это и была его совесть... Она не упрекала\"), следовательно, должно быть \"шептала она\".",
+          "В предложении \"Голос внутри прошептал в последний раз\" допущена та же ошибка в роде. Учитывая, что голос принадлежит совести (женский род), правильно было бы написать \"прошептала\"."
+        ],
+        "explanation_mistakes": [
+          "В выражении \"вес невысказанных слов, непрожитых жизней, неради жестов\" использовано несуществующее слово \"неради\". Вероятно, имелось в виду \"нерадивых жестов\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное употребление слова «неради» в фразе «неради жестов». Предполагается, что имелось в виду «нерадивых жестов» или «не сделанных жестов» (если речь шла о несовершенных действиях).",
+          "Калька с английского языка «аутсорсит». Хотя некоторые англицизмы допустимы, в данном художественном тексте это слово звучит неестественно и нарушает стилистическую плавность.",
+          "Ошибка в падежном управлении в предложении «Она искала не хозяина, а отголоска». Глагол «искать» требует винительного падежа (кого? что?), поэтому правильно будет «искала отголосок»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": -2,
+        "mistakes": 2,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 80,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Использование неестественной для русского языка конструкции 'обучение в двух языках' (встречается дважды) вместо устоявшегося 'обучение на двух языках'. Вероятно, это калька с английского 'education in two languages'."
+        ],
+        "explanation_additional_mistakes": [
+          "Стилистически неточный выбор слова 'фокусировку' в перечислении когнитивных процессов; более уместным и стандартным в данном контексте является 'фокусирование' (внимания).",
+          "Не совсем точное использование словосочетания 'инвестиций в обучение учителей', где более корректным и устоявшимся является 'инвестиций в подготовку учителей'."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Некорректное употребление предлога: \"обучение в двух языках\". Более естественно и правильно: \"обучение на двух языках\" или \"обучение двумя языками\".",
+          "Калька с английского: \"экзекутивных функций\" (executive functions). В русском языке обычно используются термины \"исполнительные функции\" или \"управляющие функции\". Прямая калька звучит неестественно.",
+          "Повторное некорректное употребление предлога: \"обучение в двух языках\". Более естественно и правильно: \"обучение на двух языках\" или \"обучение двумя языками\"."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": -2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 23,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 10,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [
+          "В стихотворении в строке «Но ты счастлив» допущена ошибка в согласовании рода. Обращение, судя по контексту, к женщине, поэтому должно быть «ты счастлива»."
+        ],
+        "explanation_mistakes": [
+          "Фраза «ты достаточно велик, чтобы его потерять» звучит неестественно, как калька с английского языка. Более подходящим по смыслу было бы слово «силён» или «зрел»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Некорректное использование причастия «подогреваемым» в сочетании с вином и в сравнении с «наши слова». Выражение «бокал с вином, уже подогреваемым, как и наши слова» создает неестественную и плохо воспринимаемую метафору, так как «подогреваемым» в таком контексте не применимо к вину, если речь не идет о физическом нагреве, а сравнение с «нашими словами» лишь усиливает смысловую неточность."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 42,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Опечатка в слове 'плащй' вместо 'плащ'."
+        ],
+        "explanation_additional_mistakes": [
+          "Тавтология 'будто будто бы'."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 1,
+        "additional_mistakes": 3,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное окончание слова 'плащй', должно быть 'плащ'."
+        ],
+        "explanation_additional_mistakes": [
+          "Повторение слова 'будто' ('будто будто бы'), что является тавтологией.",
+          "Неоптимальное использование предлога 'о' перед 'всех' ('о всех скрытых узлах'), стилистически лучше 'обо всех'.",
+          "Неправильный тип дефиса в слове 'чего‑то', должен быть обычный дефис ('чего-то')."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 93,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 81,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0
+      },
+      "error": null
+    },
+    {
+      "sample_id": 31,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 2,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "В выражении «(антогонистический плеотропия)» допущена ошибка в согласовании рода (прилагательное мужского рода, а существительное — женского) и орфографическая ошибка. Правильно: «антагонистическая плейотропия».",
+          "В выражении «быть в войне» использован неправильный предлог. Правильно: «быть на войне»."
+        ],
+        "explanation_additional_mistakes": []
+      },
+      "new_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 2,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [
+          "Вставка на иностранном языке 'vs' вместо русского аналога (например, 'против') в заголовке 'Аргумент «качества vs количества»'."
+        ],
+        "explanation_mistakes": [
+          "Использование разговорного слова 'починки' вместо более уместного 'ремонта' или 'репарации' в научном контексте ('система починки').",
+          "Несогласование рода прилагательного 'антогонистический' (м.р.) с существительным 'плеотропия' (ж.р.). Правильно: 'антагонистическая плеотропия'."
+        ],
+        "explanation_additional_mistakes": [
+          "Неточность формулировки 'места' в контексте ограниченных ресурсов ('исчерпывают пищу и места'); более уместно 'местообитания' или 'пространство'.",
+          "Отсутствие пробела между вопросительным знаком и закрывающей кавычкой в предложении 'что бы я изменил?»;'."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": 1,
+        "mistakes": 0,
+        "additional_mistakes": 2
+      },
+      "error": null
+    },
+    {
+      "sample_id": 11,
+      "original_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 3,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": [
+          "В предложении \"...которые развевались на ветру, словно будто он был частью самой природы\" используется тавтологическая конструкция \"словно будто\".",
+          "В \"Основной части\" текста многократно повторяется один и тот же большой фрагмент, что является грубой тавтологией.",
+          "Текст ответа обрывается на середине предложения: \"...он просто говорил,\""
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": 0,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [],
+        "explanation_additional_mistakes": []
+      },
+      "diff": {
+        "critical_mistakes": 0,
+        "mistakes": 0,
+        "additional_mistakes": -3
+      },
+      "error": null
+    },
+    {
+      "sample_id": 9,
+      "original_scores": {
+        "critical_mistakes": 1,
+        "mistakes": 1,
+        "additional_mistakes": 1,
+        "explanation_critical_mistakes": [
+          "\"Надев чёрную кафтан с гербом\" - ошибка в согласовании рода. Существительное \"кафтан\" мужского рода, поэтому должно быть \"чёрный кафтан\"."
+        ],
+        "explanation_mistakes": [
+          "\"когдаж мухи звенят над жнёвами\" - выдуманное слово \"жнёвами\". Вероятно, имелось в виду \"жнивами\" (от \"жнива\" - сжатое поле, жатва)."
+        ],
+        "explanation_additional_mistakes": [
+          "\"правая рука его не крестилась, а лежала на рукояти кинжала, будто бы в молитве держал счёт ударам\" - синтаксическая ошибка. Подлежащее \"рука\" (женский род) совершает действие \"лежала\", но далее следует глагол в мужском роде \"держал\", который грамматически не связан с подлежащим."
+        ]
+      },
+      "new_scores": {
+        "critical_mistakes": 0,
+        "mistakes": 3,
+        "additional_mistakes": 2,
+        "explanation_critical_mistakes": [],
+        "explanation_mistakes": [
+          "Неправильное согласование рода прилагательного: \"чёрную кафтан\" вместо \"чёрный кафтан\" (существительное мужского рода).",
+          "Пропущено существительное: \"доказательства твоей?\" вместо \"доказательства твоей чести?\".",
+          "Неправильное употребление слова: \"сабля... татуированная рунами\" вместо \"сабля... украшенная рунами\" (татуировать можно кожу, но не металл)."
+        ],
+        "explanation_additional_mistakes": [
+          "Неоднозначное или стилистически неточное выражение: \"Кровь брата — тяжкая ноша\" в контексте борьбы с врагами звучит двусмысленно и может быть истолковано как \"братоубийство\", в то время как, вероятно, имелось в виду \"человеческая кровь\" или \"пролитая кровь\".",
+          "Стилистически неловкое выражение: \"правая рука его не крестилась\" вместо более привычного \"правая рука его не творила крестного знамения\" или \"он не крестился правой рукой\"."
+        ]
+      },
+      "diff": {
+        "critical_mistakes": -1,
+        "mistakes": 2,
+        "additional_mistakes": 1
+      },
+      "error": null
+    }
+  ]
+}
