@@ -1,0 +1,21 @@
+{% if history %}
+<история>
+{% for turn in history %}
+<{{ turn.role }}>
+{{ turn.content }}
+</{{ turn.role }}>
+{% endfor %}
+</история>
+{% endif %}
+
+<запрос>
+{{ prompt }}
+</запрос>
+
+<ответ>
+{{ answer }}
+</ответ>
+
+<размеченный-ответ>
+{{ splitted_answer }}
+</размеченный-ответ>

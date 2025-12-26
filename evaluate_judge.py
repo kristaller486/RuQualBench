@@ -11,11 +11,13 @@ from typing import List, Dict, Any
 
 from dotenv import load_dotenv
 from tqdm.asyncio import tqdm as atqdm
+import litellm
 
-# Import necessary functions from main.py
-# We need judge_answer and potentially some setup
-from main import judge_answer
+# Import BenchmarkV1
+from benchmark.v1 import BenchmarkV1
 
+# Configure litellm
+litellm.ssl_verify = False
 load_dotenv()
 
 logging.basicConfig(
@@ -112,23 +114,16 @@ def get_reference_samples() -> List[Dict[str, Any]]:
     
     return selected_samples
 
-async def evaluate_sample(sample: Dict[str, Any], judge_model: str, 
-                         api_base: str, api_key: str, semaphore: asyncio.Semaphore,
-                         max_retries: int, retry_delay: float, extra_body: dict = None) -> Dict[str, Any]:
+async def evaluate_sample(benchmark: BenchmarkV1, sample: Dict[str, Any], semaphore: asyncio.Semaphore) -> Dict[str, Any]:
     """
-    Evaluates a single sample with the new judge.
+    Evaluates a single sample with the new judge using BenchmarkV1 logic.
     """
     try:
-        judge_result = await judge_answer(
+        # Use internal method _judge_answer from BenchmarkV1
+        judge_result = await benchmark._judge_answer(
             sample["dialog"],
             sample["answer"],
-            judge_model,
-            api_base,
-            api_key,
-            semaphore,
-            max_retries,
-            retry_delay,
-            extra_body
+            semaphore
         )
         
         return {
@@ -162,24 +157,27 @@ async def evaluate_sample(sample: Dict[str, Any], judge_model: str,
 async def run_evaluation(judge_model: str, extra_body: dict = None):
     # 1. Get reference samples
     logger.info("Step 1: Collecting reference samples...")
-    samples = get_reference_samples()
+    try:
+        samples = get_reference_samples()
+    except Exception as e:
+        logger.error(f"Failed to collect samples: {e}")
+        return
     
     # 2. Setup evaluation
-    judge_api_base = os.getenv("JUDGE_MODEL_BASE_URL")
-    judge_api_key = os.getenv("JUDGE_MODEL_API_KEY")
-    judge_max_workers = int(os.getenv("JUDGE_MODEL_MAX_WORKERS", "10"))
-    max_retries = int(os.getenv("MAX_RETRIES", "3"))
-    retry_delay = float(os.getenv("RETRY_DELAY", "1.0"))
+    # Initialize BenchmarkV1 to use its configuration and methods
+    benchmark = BenchmarkV1(
+        dataset_name="lite", # Placeholder, not used for single sample evaluation
+        judge_model_name=judge_model,
+        extra_body=extra_body
+    )
     
+    judge_max_workers = int(os.getenv("JUDGE_MODEL_MAX_WORKERS", "10"))
     semaphore = asyncio.Semaphore(judge_max_workers)
     
     logger.info(f"Step 2: Evaluating {len(samples)} samples with judge '{judge_model}'...")
     
     tasks = [
-        evaluate_sample(
-            sample, judge_model, judge_api_base, judge_api_key,
-            semaphore, max_retries, retry_delay, extra_body
-        )
+        evaluate_sample(benchmark, sample, semaphore)
         for sample in samples
     ]
     
