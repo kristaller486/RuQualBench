@@ -8,12 +8,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 
-from litellm import acompletion
 from tqdm.asyncio import tqdm as atqdm
 
 from benchmark.utils import load_dataset, count_tokens, remove_think_tags
+from benchmark.transport import (
+    Transport, create_transport, GenerateRequest, GenerateResponse
+)
 
 logger = logging.getLogger(__name__)
+
 
 class BenchmarkBase(ABC):
     def __init__(self, dataset_name: str, model_name: str = None, judge_model_name: str = None, 
@@ -24,7 +27,7 @@ class BenchmarkBase(ABC):
         self.extra_body = extra_body
         self.verbose_name = verbose_name
         
-        # Настройки из env
+        # Настройки из env (для обратной совместимости и логирования)
         self.test_api_base = os.getenv("TEST_MODEL_BASE_URL")
         self.test_api_key = os.getenv("TEST_MODEL_API_KEY")
         self.test_max_workers = int(os.getenv("TEST_MODEL_MAX_WORKERS", "10"))
@@ -41,43 +44,80 @@ class BenchmarkBase(ABC):
         self.max_retries = int(os.getenv("MAX_RETRIES", "3"))
         self.retry_delay = float(os.getenv("RETRY_DELAY", "1.0"))
         
-        self.logs_dir = Path("logs") # Может быть переопределено в наследниках
+        self.logs_dir = Path("logs")  # Может быть переопределено в наследниках
+        
+        # Создаем транспорты
+        self.test_transport = create_transport("TEST_MODEL")
+        self.judge_transport = create_transport("JUDGE_MODEL")
+        
+        # Переопределяем model_name из транспорта если не задан явно
+        if not model_name:
+            self.model_name = self.test_transport.config.model
+        if not judge_model_name:
+            self.judge_model_name = self.judge_transport.config.model
+
+    async def generate_answers_batch(self, dataset: List[List[Dict[str, str]]]) -> List[Dict[str, Any]]:
+        """Генерирует ответы для всего датасета через транспорт"""
+        
+        # Подготавливаем запросы
+        requests = [
+            GenerateRequest(
+                id=i,
+                messages=dialog,
+                temperature=self.test_temperature,
+                max_tokens=self.test_max_tokens
+            )
+            for i, dialog in enumerate(dataset)
+        ]
+        
+        # Создаем progress bar
+        pbar = atqdm(total=len(requests), desc="Генерация ответов")
+        
+        def progress_callback():
+            pbar.update(1)
+        
+        # Вызываем транспорт
+        responses = await self.test_transport.generate_batch(requests, progress_callback)
+        pbar.close()
+        
+        # Преобразуем ответы в формат результатов
+        results = []
+        for response in responses:
+            content = response.content
+            
+            # Обработка think tags если нужно
+            if content and os.getenv("TEST_MODEL_EXCLUDE_THINK", "").lower() in ["true", "1", "yes"]:
+                content = remove_think_tags(content)
+            
+            results.append({
+                "dialog_id": response.id,
+                "dialog": dataset[response.id],
+                "answer": content,
+                "tokens": count_tokens(content) if content else 0,
+                "error": response.error
+            })
+        
+        # Сортируем по id
+        results.sort(key=lambda x: x["dialog_id"])
+        return results
 
     async def generate_answer(self, messages: List[Dict[str, str]], semaphore: asyncio.Semaphore) -> str:
-        """Генерирует ответ тестируемой модели асинхронно с ретраями"""
+        """Генерирует ответ тестируемой модели асинхронно с ретраями (legacy метод)"""
         async with semaphore:
-            last_error = None
-            for attempt in range(self.max_retries):
-                try:
-                    kwargs = {
-                        "model": self.model_name,
-                        "messages": messages,
-                        "api_base": self.test_api_base,
-                        "api_key": self.test_api_key,
-                        "temperature": self.test_temperature,
-                        "max_tokens": self.test_max_tokens
-                    }
-                    if self.extra_body:
-                        kwargs["extra_body"] = self.extra_body
-                        
-                    response = await acompletion(**kwargs)
-                    content = response.choices[0].message.content
-                    
-                    if os.getenv("TEST_MODEL_EXCLUDE_THINK", "").lower() in ["true", "1", "yes"]:
-                        content = remove_think_tags(content)
-                    
-                    return content
-                except Exception as e:
-                    last_error = e
-                    logger.warning(f"Ошибка при генерации (попытка {attempt+1}/{self.max_retries}): {e}")
-                    if attempt < self.max_retries - 1:
-                        await asyncio.sleep(self.retry_delay * (attempt + 1))
-                    else:
-                        raise last_error
+            content = await self.test_transport.generate(
+                messages,
+                temperature=self.test_temperature,
+                max_tokens=self.test_max_tokens
+            )
+            
+            if os.getenv("TEST_MODEL_EXCLUDE_THINK", "").lower() in ["true", "1", "yes"]:
+                content = remove_think_tags(content)
+            
+            return content
 
     async def generate_dialog_answer(self, dialog: List[Dict[str, str]], dialog_id: int, 
                                      semaphore: asyncio.Semaphore) -> Dict[str, Any]:
-        """Генерирует ответ для диалога"""
+        """Генерирует ответ для диалога (legacy метод)"""
         try:
             answer = await self.generate_answer(dialog, semaphore)
             tokens = count_tokens(answer)
@@ -114,10 +154,14 @@ class BenchmarkBase(ABC):
         """Запускает один прогон бенчмарка"""
         run_prefix = f"Прогон {run_number}: " if run_number is not None else ""
         
-        logger.info(f"{run_prefix}Тестируемая модель: {self.model_name} (max_workers={self.test_max_workers}, temperature={self.test_temperature})")
+        # Логируем информацию о транспортах
+        test_transport_type = os.getenv("TEST_MODEL_TRANSPORT", "litellm")
+        judge_transport_type = os.getenv("JUDGE_MODEL_TRANSPORT", "litellm")
+        
+        logger.info(f"{run_prefix}Тестируемая модель: {self.model_name} (transport={test_transport_type}, max_workers={self.test_max_workers}, temperature={self.test_temperature})")
         if self.extra_body:
             logger.info(f"{run_prefix}Test extra body: {self.extra_body}")
-        logger.info(f"{run_prefix}Модель-оценщик: {self.judge_model_name} (max_workers={self.judge_max_workers})")
+        logger.info(f"{run_prefix}Модель-оценщик: {self.judge_model_name} (transport={judge_transport_type}, max_workers={self.judge_max_workers})")
         if self.judge_extra_body:
             logger.info(f"{run_prefix}Judge extra body: {self.judge_extra_body}")
         logger.info(f"{run_prefix}Датасет: {self.dataset_name}")
@@ -128,7 +172,6 @@ class BenchmarkBase(ABC):
         actual_test_workers = min(self.test_max_workers, len(dataset))
         actual_judge_workers = min(self.judge_max_workers, len(dataset))
         
-        test_semaphore = asyncio.Semaphore(actual_test_workers)
         judge_semaphore = asyncio.Semaphore(actual_judge_workers)
         
         # Этап 1: Генерация (или использование готовых ответов)
@@ -137,20 +180,18 @@ class BenchmarkBase(ABC):
             answer_results = existing_answer_results
         else:
             logger.info(f"{run_prefix}Этап 1: Генерация ответов от тестируемой модели")
-            generation_tasks = [
-                self.generate_dialog_answer(dialog, i, test_semaphore)
-                for i, dialog in enumerate(dataset)
-            ]
             
-            answer_results = []
-            for coro in atqdm.as_completed(generation_tasks, desc="Генерация ответов", total=len(generation_tasks)):
-                result = await coro
-                answer_results.append(result)
+            # Используем batch метод транспорта
+            if self.test_transport.is_batch_native:
+                logger.info(f"{run_prefix}Используется нативный Batch API")
             
-            answer_results.sort(key=lambda x: x["dialog_id"])
+            answer_results = await self.generate_answers_batch(dataset)
         
         # Этап 2: Оценка
         logger.info(f"{run_prefix}Этап 2: Оценка ответов судьей")
+        
+        # Для судьи пока используем старый подход с semaphore
+        # TODO: В будущем можно добавить batch для судьи
         judging_tasks = [
             self.judge_dialog_answer(answer_result, judge_semaphore)
             for answer_result in answer_results
@@ -170,7 +211,9 @@ class BenchmarkBase(ABC):
             "model": self.model_name,
             "judge_model": self.judge_model_name,
             "test_max_workers": self.test_max_workers,
-            "judge_max_workers": self.judge_max_workers
+            "judge_max_workers": self.judge_max_workers,
+            "test_transport": test_transport_type,
+            "judge_transport": judge_transport_type
         }
         
         return results, summary, config
