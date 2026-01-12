@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def load_dataset(dataset_name: str) -> List[List[Dict[str, str]]]:
     """Загружает датасет из json файла"""
-    sizes = {'lite': 100, 'base': 250, 'large': 500, "debug": 5}
+    sizes = {'lite': 100, 'base': 250, 'large': 500, "debug": 3}
     filename = f"{dataset_name}_bench_{sizes[dataset_name]}.json"
     with open(filename, 'r', encoding='utf-8') as f:
         return json.load(f)

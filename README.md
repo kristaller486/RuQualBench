@@ -22,14 +22,12 @@ uv run python main.py --help
 ```
 
 ``` 
-usage: main.py [-h] [--dataset {lite,base,large}] [--model MODEL] [--judge-model JUDGE_MODEL] [--extra-body EXTRA_BODY] [-n NUM_RUNS] [-v VERBOSE_NAME]
-               [--continue CONTINUE_TIMESTAMP] [--no-regenerate]
-
-RuQualBench - бенчмарк качества русского языка
+usage: main.py v1 [-h] [--dataset {debug,lite,base,large}] [--model MODEL] [--judge-model JUDGE_MODEL] [--extra-body EXTRA_BODY] [-n NUM_RUNS] [-v VERBOSE_NAME]
+                  [--continue CONTINUE_TIMESTAMP] [--no-regenerate]
 
 options:
   -h, --help            show this help message and exit
-  --dataset {lite,base,large}
+  --dataset {debug,lite,base,large}
                         Выбор датасета (по умолчанию: lite)
   --model MODEL         Переопределить тестируемую модель из .env
   --judge-model JUDGE_MODEL
@@ -67,6 +65,11 @@ options:
 
 ```bash
 uv run python generate_leaderboard.py
+```
+
+### Режим сервеора / API для бенчмарка
+```bash
+uv run python -m server
 ```
 
 ## Citing RuQualBench
