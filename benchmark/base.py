@@ -53,8 +53,20 @@ class BenchmarkBase(ABC):
         # Переопределяем model_name из транспорта если не задан явно
         if not model_name:
             self.model_name = self.test_transport.config.model
+        else:
+            self.test_transport.config.model = self.model_name
+
         if not judge_model_name:
             self.judge_model_name = self.judge_transport.config.model
+        else:
+            self.judge_transport.config.model = self.judge_model_name
+
+        # Обновляем extra_body транспорта, если передан параметр --extra-body
+        if self.extra_body:
+            if self.test_transport.config.extra_body:
+                self.test_transport.config.extra_body.update(self.extra_body)
+            else:
+                self.test_transport.config.extra_body = self.extra_body
 
     async def generate_answers_batch(self, dataset: List[List[Dict[str, str]]]) -> List[Dict[str, Any]]:
         """Генерирует ответы для всего датасета через транспорт"""
