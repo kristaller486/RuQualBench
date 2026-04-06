@@ -1,0 +1,6 @@
+fastapi>=0.115.0
+uvicorn>=0.34.0
+sqlalchemy>=2.0.39
+psycopg[binary]>=3.2.6
+alembic>=1.15.2
+python-dotenv>=1.0.0

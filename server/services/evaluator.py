@@ -8,13 +8,14 @@ import asyncio
 import json
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any, Awaitable, Callable, Dict, List, Optional
 
 from jinja2 import Environment, FileSystemLoader
 from litellm import acompletion
 
+from benchmark.judge_v2 import V2Judge, build_empty_mistakes_count
 from benchmark.transport import create_transport
-from benchmark.utils import extract_json_from_response, split_into_numbered_sentences
+from benchmark.utils import extract_json_from_response
 from server.models import (
     BatchItem,
     BatchItemResultV1,
@@ -37,20 +38,16 @@ class EvaluatorService:
     
     def __init__(self):
         """Инициализирует сервис с настройками из переменных окружения."""
-        # Настройки judge модели
-        self.judge_model_name = os.getenv("JUDGE_MODEL_NAME")
-        self.judge_api_base = os.getenv("JUDGE_MODEL_BASE_URL")
-        self.judge_api_key = os.getenv("JUDGE_MODEL_API_KEY")
+        self.judge_transport = create_transport("JUDGE_MODEL")
+        self.judge_model_name = self.judge_transport.config.model
+        self.judge_api_base = self.judge_transport.config.base_url
+        self.judge_api_key = self.judge_transport.config.api_key
         self.judge_max_workers = int(os.getenv("JUDGE_MODEL_MAX_WORKERS", "10"))
-        
-        judge_extra_body_str = os.getenv("JUDGE_MODEL_EXTRA_BODY")
-        self.judge_extra_body = json.loads(judge_extra_body_str) if judge_extra_body_str else None
-        
-        self.max_retries = int(os.getenv("MAX_RETRIES", "3"))
-        self.retry_delay = float(os.getenv("RETRY_DELAY", "1.0"))
-        
-        # Jinja2 окружение для шаблонов
+        self.judge_extra_body = self.judge_transport.config.extra_body
+        self.max_retries = self.judge_transport.config.max_retries
+        self.retry_delay = self.judge_transport.config.retry_delay
         self._jinja_env = Environment(loader=FileSystemLoader('prompts'))
+        self.v2_judge = V2Judge(self.judge_transport)
         
         logger.info(f"EvaluatorService инициализирован: judge_model={self.judge_model_name}, max_workers={self.judge_max_workers}")
     
@@ -98,7 +95,7 @@ class EvaluatorService:
         ]
         
         # Выполняем запрос к judge модели с ретраями
-        last_error = None
+        last_error: Optional[Exception] = None
         for attempt in range(self.max_retries):
             try:
                 kwargs = {
@@ -111,7 +108,9 @@ class EvaluatorService:
                     kwargs["extra_body"] = self.judge_extra_body
                 
                 response = await acompletion(**kwargs)
-                result = extract_json_from_response(response.choices[0].message.content)
+                response_any: Any = response
+                response_content = response_any.choices[0].message.content or ""
+                result = extract_json_from_response(response_content)
                 
                 return EvaluateResponseV1(
                     critical_mistakes=result.get("critical_mistakes", 0),
@@ -128,6 +127,8 @@ class EvaluatorService:
                     await asyncio.sleep(self.retry_delay * (attempt + 1))
         
         logger.error(f"Ошибка при оценке V1 после {self.max_retries} попыток: {last_error}")
+        if last_error is None:
+            raise RuntimeError("Не удалось оценить ответ по V1 по неизвестной причине")
         raise last_error
     
     async def evaluate_v2(self, dialog: List[Dict[str, str]], answer: str) -> EvaluateResponseV2:
@@ -141,87 +142,27 @@ class EvaluatorService:
         Returns:
             Результат оценки с детальным списком ошибок
         """
-        # Загружаем шаблоны
-        system_template = self._jinja_env.get_template('judge_system_v2.jinja')
-        user_template = self._jinja_env.get_template('judge_user_v2.jinja')
-        system_prompt = system_template.render()
-        
-        # Подготавливаем данные для промпта
-        history_for_judge = dialog[:-1] if len(dialog) > 1 else None
-        user_prompt = dialog[-1]["content"]
-        splitted_answer = split_into_numbered_sentences(answer)
-        
-        user_content = user_template.render(
-            history=history_for_judge,
-            prompt=user_prompt,
-            answer=answer,
-            splitted_answer=splitted_answer
-        )
-        
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content}
+        result = await self.v2_judge.evaluate(dialog, answer)
+        mistakes = [
+            MistakeV2(
+                position=error.get("position", []),
+                level=error.get("level", 0),
+                type=error.get("type", "unknown"),
+                explanation=error.get("explanation", "")
+            )
+            for error in result.mistakes
         ]
-        
-        # Выполняем запрос к judge модели с ретраями
-        last_error = None
-        for attempt in range(self.max_retries):
-            try:
-                kwargs = {
-                    "model": self.judge_model_name,
-                    "messages": messages,
-                    "api_base": self.judge_api_base,
-                    "api_key": self.judge_api_key
-                }
-                if self.judge_extra_body:
-                    kwargs["extra_body"] = self.judge_extra_body
-                
-                response = await acompletion(**kwargs)
-                raw_response_content = response.choices[0].message.content
-                
-                # Ожидаем список ошибок
-                result_list = extract_json_from_response(raw_response_content)
-                if not isinstance(result_list, list):
-                    if isinstance(result_list, dict) and "items" in result_list:
-                        result_list = result_list["items"]
-                    else:
-                        logger.warning(f"Judge V2 вернул не список: {type(result_list)}")
-                        result_list = []
-                
-                # Подсчитываем ошибки по уровням
-                mistakes_count = {"1": 0, "2": 0, "3": 0}
-                mistakes = []
-                
-                for error in result_list:
-                    level = error.get("level")
-                    if level in [1, 2, 3]:
-                        mistakes_count[str(level)] += 1
-                    
-                    mistakes.append(MistakeV2(
-                        position=error.get("position", []),
-                        level=error.get("level", 0),
-                        type=error.get("type", "unknown"),
-                        explanation=error.get("explanation", "")
-                    ))
-                
-                return EvaluateResponseV2(
-                    mistakes=mistakes,
-                    mistakes_count=mistakes_count,
-                    splitted_answer=splitted_answer
-                )
-            except Exception as e:
-                last_error = e
-                logger.warning(f"Ошибка при оценке V2 (попытка {attempt+1}/{self.max_retries}): {e}")
-                if attempt < self.max_retries - 1:
-                    await asyncio.sleep(self.retry_delay * (attempt + 1))
-        
-        logger.error(f"Ошибка при оценке V2 после {self.max_retries} попыток: {last_error}")
-        raise last_error
+
+        return EvaluateResponseV2(
+            mistakes=mistakes,
+            mistakes_count=result.mistakes_count,
+            splitted_answer=result.splitted_answer
+        )
     
     async def evaluate_batch_v1(
         self, 
         items: List[BatchItem],
-        progress_callback: callable = None
+        progress_callback: Optional[Callable[[], Awaitable[None]]] = None
     ) -> tuple[List[BatchItemResultV1], BatchSummary]:
         """
         Оценивает батч элементов по методологии V1.
@@ -291,7 +232,7 @@ class EvaluatorService:
     async def evaluate_batch_v2(
         self, 
         items: List[BatchItem],
-        progress_callback: callable = None
+        progress_callback: Optional[Callable[[], Awaitable[None]]] = None
     ) -> tuple[List[BatchItemResultV2], BatchSummary]:
         """
         Оценивает батч элементов по методологии V2.
@@ -330,7 +271,7 @@ class EvaluatorService:
                     return BatchItemResultV2(
                         id=item.id,
                         mistakes=[],
-                        mistakes_count={"1": 0, "2": 0, "3": 0},
+                        mistakes_count=build_empty_mistakes_count(),
                         splitted_answer="",
                         error=str(e)
                     )

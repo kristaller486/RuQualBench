@@ -19,8 +19,14 @@ logger = logging.getLogger(__name__)
 
 
 class BenchmarkBase(ABC):
-    def __init__(self, dataset_name: str, model_name: str = None, judge_model_name: str = None, 
-                 extra_body: dict = None, verbose_name: str = None):
+    def __init__(
+        self,
+        dataset_name: str,
+        model_name: Optional[str] = None,
+        judge_model_name: Optional[str] = None,
+        extra_body: Optional[dict] = None,
+        verbose_name: Optional[str] = None,
+    ):
         self.dataset_name = dataset_name
         self.model_name = model_name or os.getenv("TEST_MODEL_NAME")
         self.judge_model_name = judge_model_name or os.getenv("JUDGE_MODEL_NAME")
@@ -54,12 +60,12 @@ class BenchmarkBase(ABC):
         if not model_name:
             self.model_name = self.test_transport.config.model
         else:
-            self.test_transport.config.model = self.model_name
+            self.test_transport.config.model = self.model_name or self.test_transport.config.model
 
         if not judge_model_name:
             self.judge_model_name = self.judge_transport.config.model
         else:
-            self.judge_transport.config.model = self.judge_model_name
+            self.judge_transport.config.model = self.judge_model_name or self.judge_transport.config.model
 
         # Обновляем extra_body транспорта, если передан параметр --extra-body
         if self.extra_body:
@@ -113,6 +119,12 @@ class BenchmarkBase(ABC):
         results.sort(key=lambda x: x["dialog_id"])
         return results
 
+    def get_dataset_log_name(self) -> str:
+        dataset_path = Path(self.dataset_name)
+        if dataset_path.suffix.lower() == ".json":
+            return dataset_path.stem
+        return self.dataset_name
+
     async def generate_answer(self, messages: List[Dict[str, str]], semaphore: asyncio.Semaphore) -> str:
         """Генерирует ответ тестируемой модели асинхронно с ретраями (legacy метод)"""
         async with semaphore:
@@ -161,8 +173,11 @@ class BenchmarkBase(ABC):
         """Вычисляет статистику по результатам (реализуется в наследниках)"""
         pass
 
-    async def run_single_benchmark(self, run_number: int = None, 
-                                  existing_answer_results: List[Dict[str, Any]] = None) -> Tuple[List[Dict[str, Any]], Dict[str, Any], Dict[str, Any]]:
+    async def run_single_benchmark(
+        self,
+        run_number: Optional[int] = None,
+        existing_answer_results: Optional[List[Dict[str, Any]]] = None,
+    ) -> Tuple[List[Dict[str, Any]], Dict[str, Any], Dict[str, Any]]:
         """Запускает один прогон бенчмарка"""
         run_prefix = f"Прогон {run_number}: " if run_number is not None else ""
         
@@ -230,9 +245,14 @@ class BenchmarkBase(ABC):
         
         return results, summary, config
 
-    async def run_multiple_benchmarks(self, num_runs: int, continue_timestamp: str = None, 
-                                     start_run_number: int = 0, no_regenerate: bool = False,
-                                     existing_answer_results: List[Dict[str, Any]] = None):
+    async def run_multiple_benchmarks(
+        self,
+        num_runs: int,
+        continue_timestamp: Optional[str] = None,
+        start_run_number: int = 0,
+        no_regenerate: bool = False,
+        existing_answer_results: Optional[List[Dict[str, Any]]] = None,
+    ):
         """Запускает бенчмарк несколько раз"""
         self.logs_dir.mkdir(exist_ok=True)
         
@@ -301,7 +321,7 @@ class BenchmarkBase(ABC):
             
             all_summaries.append(summary)
             
-            log_filename = self.logs_dir / f"benchmark_{base_timestamp}_run_{run_num}_{self.dataset_name}.json"
+            log_filename = self.logs_dir / f"benchmark_{base_timestamp}_run_{run_num}_{self.get_dataset_log_name()}.json"
             
             log_data = {
                 "config": {

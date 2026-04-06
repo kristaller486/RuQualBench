@@ -10,9 +10,11 @@ index.html
 logs/**.html
 trash/**
 logs_dataset**
-
+annotator
 # Cache
 cache/
-
+hardest_prompts_v2_output
 # Virtual environments
 .venv
+v2_data_gen_models.toml
+dataset_prep/v2/configs/v2_data_gen_models.toml

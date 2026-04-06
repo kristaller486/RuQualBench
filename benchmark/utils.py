@@ -1,6 +1,7 @@
 import json
 import re
 import logging
+from pathlib import Path
 import nltk
 import tiktoken
 from typing import List, Dict, Any
@@ -9,7 +10,15 @@ logger = logging.getLogger(__name__)
 
 def load_dataset(dataset_name: str) -> List[List[Dict[str, str]]]:
     """Загружает датасет из json файла"""
+    dataset_path = Path(dataset_name)
+    if dataset_path.exists():
+        with dataset_path.open('r', encoding='utf-8') as f:
+            return json.load(f)
+
     sizes = {'lite': 100, 'base': 250, 'large': 500, "debug": 3}
+    if dataset_name not in sizes:
+        raise ValueError(f"Неизвестный датасет: {dataset_name}")
+
     filename = f"{dataset_name}_bench_{sizes[dataset_name]}.json"
     with open(filename, 'r', encoding='utf-8') as f:
         return json.load(f)

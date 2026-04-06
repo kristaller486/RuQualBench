@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RuQualBench Judge Bench Annotator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4ede1;
+      --bg-accent: #e5dccd;
+      --paper: rgba(255, 252, 246, 0.92);
+      --paper-strong: #fffaf1;
+      --paper-soft: #f9f2e5;
+      --ink: #2d241d;
+      --muted: #7b6c5d;
+      --line: rgba(96, 74, 52, 0.15);
+      --accent: #1f6f78;
+      --accent-strong: #15535a;
+      --accent-soft: rgba(31, 111, 120, 0.12);
+      --ok: #2d7a4b;
+      --ok-soft: rgba(45, 122, 75, 0.13);
+      --warn: #a4631b;
+      --warn-soft: rgba(164, 99, 27, 0.14);
+      --danger: #9e3f31;
+      --danger-soft: rgba(158, 63, 49, 0.13);
+      --level-1-bg: #fff1c7;
+      --level-1-line: #d9a441;
+      --level-2-bg: #ffd9b5;
+      --level-2-line: #d97706;
+      --level-3-bg: #ffd0c7;
+      --level-3-line: #c2410c;
+      --shadow: 0 18px 48px rgba(77, 56, 36, 0.12);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body,
+    #root {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(31, 111, 120, 0.13), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(191, 137, 74, 0.18), transparent 28%),
+        linear-gradient(180deg, #f7f1e7 0%, #efe4d4 100%);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .app-shell {
+      width: min(1780px, calc(100vw - 24px));
+      margin: 16px auto;
+      padding: 18px;
+      border: 1px solid rgba(94, 69, 47, 0.08);
+      border-radius: 28px;
+      background: rgba(255, 249, 241, 0.68);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+      padding: 8px 10px 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(31, 111, 120, 0.1);
+      color: var(--accent-strong);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .topbar h1 {
+      margin: 14px 0 10px;
+      font-family: "Literata", serif;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      max-width: 880px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      min-width: min(560px, 100%);
+    }
+
+    .status-card {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--paper);
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .status-value {
+      margin-top: 10px;
+      font-family: "Literata", serif;
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .status-card.done .status-value {
+      color: var(--ok);
+    }
+
+    .status-card.pending .status-value {
+      color: var(--warn);
+    }
+
+    .status-card.total .status-value {
+      color: var(--accent-strong);
+    }
+
+    .path-bar {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 10px 18px;
+    }
+
+    .path-card {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255, 252, 246, 0.86);
+    }
+
+    .path-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .path-card code {
+      display: block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--ink);
+      word-break: break-word;
+    }
+
+    .flash,
+    .error-banner {
+      margin: 0 10px 18px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .flash {
+      border: 1px solid rgba(45, 122, 75, 0.2);
+      background: var(--ok-soft);
+      color: var(--ok);
+    }
+
+    .error-banner {
+      border: 1px solid rgba(158, 63, 49, 0.2);
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr) 440px;
+      gap: 16px;
+      min-height: calc(100vh - 270px);
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--paper);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .sidebar-header,
+    .main-header,
+    .inspector-header {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 252, 246, 0.95), rgba(247, 239, 226, 0.88));
+    }
+
+    .sidebar-header h2,
+    .main-header h2,
+    .inspector-header h2 {
+      margin: 0;
+      font-family: "Literata", serif;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .sidebar-header p,
+    .main-header p,
+    .inspector-header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .search-block {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 12px;
+    }
+
+    .search-input,
+    .field-input,
+    .field-select,
+    .field-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid rgba(86, 65, 45, 0.14);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--ink);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input:focus,
+    .field-input:focus,
+    .field-select:focus,
+    .field-textarea:focus {
+      outline: none;
+      border-color: rgba(31, 111, 120, 0.46);
+      box-shadow: 0 0 0 4px rgba(31, 111, 120, 0.12);
+    }
+
+    .chip-row,
+    .toolbar-row,
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-chip,
+    .meta-pill,
+    .toggle-chip,
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: rgba(117, 96, 73, 0.08);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .filter-chip.is-active,
+    .toggle-chip.is-active {
+      border-color: rgba(31, 111, 120, 0.3);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+    }
+
+    .status-pill.done {
+      background: var(--ok-soft);
+      color: var(--ok);
+    }
+
+    .status-pill.pending {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+
+    .sidebar-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .sidebar-item {
+      display: grid;
+      gap: 10px;
+      padding: 14px 14px 15px;
+      border: 1px solid rgba(92, 72, 51, 0.12);
+      border-radius: 16px;
+      background: rgba(255, 253, 248, 0.92);
+      text-align: left;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .sidebar-item:hover {
+      transform: translateY(-1px);
+      border-color: rgba(31, 111, 120, 0.26);
+      box-shadow: 0 10px 22px rgba(71, 54, 38, 0.08);
+    }
+
+    .sidebar-item.is-active {
+      border-color: rgba(31, 111, 120, 0.36);
+      box-shadow: 0 0 0 2px rgba(31, 111, 120, 0.18);
+      background: linear-gradient(180deg, rgba(255, 253, 248, 1), rgba(240, 249, 248, 0.95));
+    }
+
+    .sidebar-item__top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-item__title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .sidebar-item__preview {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .sidebar-item__footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .main-actions {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 252, 246, 0.84);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: rgba(104, 83, 62, 0.08);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(83, 60, 38, 0.08);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2b7a83, #1f6f78);
+      color: #fff8ef;
+    }
+
+    .btn-secondary {
+      border-color: rgba(31, 111, 120, 0.18);
+      background: rgba(31, 111, 120, 0.08);
+      color: var(--accent-strong);
+    }
+
+    .btn-warning {
+      background: rgba(164, 99, 27, 0.1);
+      color: var(--warn);
+    }
+
+    .btn-danger {
+      background: rgba(158, 63, 49, 0.1);
+      color: var(--danger);
+    }
+
+    .btn-ghost {
+      background: rgba(117, 96, 73, 0.06);
+      color: var(--ink);
+    }
+
+    .prompt-card,
+    .meta-card {
+      margin: 16px 18px 0;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(252, 246, 236, 0.94));
+    }
+
+    .card-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .prompt-text {
+      margin-top: 14px;
+      font-family: "Literata", serif;
+      font-size: 18px;
+      line-height: 1.68;
+      white-space: pre-wrap;
+      color: #392d24;
+    }
+
+    .meta-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .answer-panel {
+      margin: 16px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 253, 248, 0.92);
+      overflow: hidden;
+    }
+
+    .answer-toolbar {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .answer-toolbar__left,
+    .answer-toolbar__right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .sentence-grid {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding: 18px 18px 22px;
+      align-content: start;
+    }
+
+    .sentence-flow {
+      color: #2d241d;
+      font-family: "Literata", serif;
+      font-size: 17px;
+      line-height: 1.82;
+    }
+
+    .sentence-inline {
+      display: inline;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: none;
+      color: #2c2a27;
+      text-align: left;
+      line-height: inherit;
+      vertical-align: baseline;
+      transition: opacity 0.14s ease;
+    }
+
+    .sentence-inline__inner {
+      display: inline;
+      padding: 4px 10px 5px;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      background: transparent;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      transition: box-shadow 0.14s ease, background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+    }
+
+    .sentence-inline:hover .sentence-inline__inner {
+      background: rgba(117, 96, 73, 0.05);
+    }
+
+    .sentence-inline.is-selected .sentence-inline__inner {
+      background: rgba(240, 249, 248, 0.98);
+      box-shadow: 0 0 0 4px rgba(31, 111, 120, 0.18);
+    }
+
+    .sentence-inline.is-muted {
+      opacity: 0.42;
+    }
+
+    .sentence-inline.level-1 .sentence-inline__inner {
+      border-color: var(--level-1-line);
+      background: rgba(255, 241, 199, 0.42);
+      color: #8a5a0b;
+    }
+
+    .sentence-inline.level-2 .sentence-inline__inner {
+      border-color: var(--level-2-line);
+      background: rgba(255, 217, 181, 0.4);
+      color: #96510c;
+    }
+
+    .sentence-inline.level-3 .sentence-inline__inner {
+      border-color: var(--level-3-line);
+      background: rgba(255, 208, 199, 0.44);
+      color: #9e3f31;
+    }
+
+    .sentence-inline__text {
+      display: inline;
+      vertical-align: middle;
+      white-space: pre-wrap;
+    }
+
+    .inspector {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .inspector-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .section-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 252, 246, 0.96);
+      overflow: hidden;
+    }
+
+    .section-card__head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-card__title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .section-card__body {
+      padding: 14px 16px 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .mistake-card {
+      padding: 14px;
+      border: 1px solid rgba(92, 72, 51, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.82);
+      display: grid;
+      gap: 10px;
+    }
+
+    .mistake-card.level-1 {
+      border-left: 5px solid var(--level-1-line);
+    }
+
+    .mistake-card.level-2 {
+      border-left: 5px solid var(--level-2-line);
+    }
+
+    .mistake-card.level-3 {
+      border-left: 5px solid var(--level-3-line);
+    }
+
+    .mistake-card.is-focused {
+      box-shadow: 0 0 0 2px rgba(31, 111, 120, 0.16);
+    }
+
+    .mistake-card__row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .mistake-title {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .level-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .level-pill.level-1 {
+      background: var(--level-1-bg);
+      color: #8a5a0b;
+    }
+
+    .level-pill.level-2 {
+      background: var(--level-2-bg);
+      color: #96510c;
+    }
+
+    .level-pill.level-3 {
+      background: var(--level-3-bg);
+      color: #9e3f31;
+    }
+
+    .mistake-type {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    .mistake-positions {
+      color: var(--muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+    }
+
+    .mistake-text {
+      font-size: 14px;
+      line-height: 1.55;
+      color: #40362d;
+      white-space: pre-wrap;
+    }
+
+    .mistake-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mini-btn {
+      padding: 7px 10px;
+      border: 1px solid rgba(92, 72, 51, 0.12);
+      border-radius: 10px;
+      background: rgba(117, 96, 73, 0.06);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .mini-btn.warning {
+      background: rgba(164, 99, 27, 0.08);
+      color: var(--warn);
+    }
+
+    .mini-btn.danger {
+      background: rgba(158, 63, 49, 0.08);
+      color: var(--danger);
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field-row {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field-row label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .field-textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .selection-note {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(31, 111, 120, 0.08);
+      color: var(--accent-strong);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .empty-state {
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .loading-state {
+      display: grid;
+      place-items: center;
+      min-height: 60vh;
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    @media (max-width: 1480px) {
+      .workspace {
+        grid-template-columns: 300px minmax(0, 1fr) 390px;
+      }
+    }
+
+    @media (max-width: 1260px) {
+      .topbar,
+      .path-bar,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .status-grid {
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .app-shell {
+        width: min(100vw - 12px, 100%);
+        margin: 6px auto;
+        padding: 10px;
+        border-radius: 22px;
+      }
+
+      .status-grid,
+      .path-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar h1 {
+        font-size: 32px;
+      }
+
+      .prompt-text {
+        font-size: 16px;
+      }
+
+      .answer-toolbar,
+      .main-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .answer-toolbar__left,
+      .answer-toolbar__right,
+      .button-row {
+        width: 100%;
+      }
+
+      .btn,
+      .mini-btn {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const { useCallback, useEffect, useMemo, useState } = React;
+
+    const API_BASE = "/api";
+    const LEVEL_META = {
+      1: { label: "L1", title: "Незначительная" },
+      2: { label: "L2", title: "Обычная" },
+      3: { label: "L3", title: "Критическая" },
+    };
+
+    function createEmptyForm() {
+      return {
+        id: null,
+        level: 2,
+        type: "other",
+        explanation: "",
+      };
+    }
+
+    async function readJson(path, options = {}) {
+      const response = await fetch(`${API_BASE}${path}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        },
+        ...options,
+      });
+
+      const text = await response.text();
+      let payload = null;
+      if (text) {
+        try {
+          payload = JSON.parse(text);
+        } catch (error) {
+          payload = null;
+        }
+      }
+
+      if (!response.ok) {
+        const detail = payload && payload.detail ? payload.detail : text || "Неизвестная ошибка";
+        throw new Error(detail);
+      }
+
+      return payload;
+    }
+
+    function deepCopy(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function sortMistakes(mistakes) {
+      return [...mistakes].sort((left, right) => {
+        const leftPos = left.position && left.position.length ? left.position[0] : 0;
+        const rightPos = right.position && right.position.length ? right.position[0] : 0;
+        if (leftPos !== rightPos) {
+          return leftPos - rightPos;
+        }
+        const leftJoined = (left.position || []).join(",");
+        const rightJoined = (right.position || []).join(",");
+        if (leftJoined !== rightJoined) {
+          return leftJoined.localeCompare(rightJoined, "ru");
+        }
+        if (left.level !== right.level) {
+          return right.level - left.level;
+        }
+        if (left.type !== right.type) {
+          return left.type.localeCompare(right.type, "ru");
+        }
+        return String(left.id || "").localeCompare(String(right.id || ""), "ru");
+      });
+    }
+
+    function serializeDraft(mistakes, status) {
+      return JSON.stringify({
+        status,
+        mistakes: sortMistakes(mistakes).map((mistake) => ({
+          id: mistake.id || null,
+          position: [...(mistake.position || [])],
+          level: Number(mistake.level || 0),
+          type: String(mistake.type || ""),
+          explanation: String(mistake.explanation || ""),
+        })),
+      });
+    }
+
+    function countTotal(counts) {
+      return Object.values(counts || {}).reduce((sum, value) => sum + Number(value || 0), 0);
+    }
+
+    function buildSummaryFromItem(item) {
+      return {
+        item_id: item.item_id,
+        prompt_id: item.prompt_id,
+        prompt_preview: item.prompt_preview,
+        answer_preview: item.answer_preview,
+        model_display_name: item.model && item.model.display_name ? item.model.display_name : "Без имени",
+        tokens: item.tokens,
+        judge_total_mistakes: countTotal(item.judge_prediction && item.judge_prediction.mistakes_count),
+        gold_total_mistakes: countTotal(item.gold_annotation && item.gold_annotation.mistakes_count),
+        annotation_status: item.annotation_status,
+        updated_at: item.updated_at,
+      };
+    }
+
+    function buildSentenceState(sentences, mistakes) {
+      const state = {};
+      (sentences || []).forEach((sentence) => {
+        state[sentence.id] = {
+          maxLevel: 0,
+          count: 0,
+          types: [],
+        };
+      });
+
+      (mistakes || []).forEach((mistake) => {
+        (mistake.position || []).forEach((position) => {
+          if (!state[position]) {
+            return;
+          }
+          state[position].maxLevel = Math.max(state[position].maxLevel, Number(mistake.level || 0));
+          state[position].count += 1;
+          if (!state[position].types.includes(mistake.type)) {
+            state[position].types.push(mistake.type);
+          }
+        });
+      });
+
+      return state;
+    }
+
+    function buildSentenceFlow(answer, sentences) {
+      if (!Array.isArray(sentences) || sentences.length === 0) {
+        return [];
+      }
+
+      const sourceText = typeof answer === "string" ? answer : "";
+      if (!sourceText) {
+        return sentences.map((sentence, index) => ({
+          ...sentence,
+          leading_text: index === 0 ? "" : " ",
+          trailing_text: "",
+        }));
+      }
+
+      const flow = [];
+      let cursor = 0;
+      let canAppendTail = true;
+
+      sentences.forEach((sentence, index) => {
+        const sentenceText = typeof sentence.text === "string" ? sentence.text : "";
+        const matchIndex = sentenceText ? sourceText.indexOf(sentenceText, cursor) : cursor;
+
+        if (matchIndex === -1) {
+          canAppendTail = false;
+          flow.push({
+            ...sentence,
+            leading_text: index === 0 ? "" : " ",
+            trailing_text: "",
+          });
+          return;
+        }
+
+        flow.push({
+          ...sentence,
+          leading_text: sourceText.slice(cursor, matchIndex),
+          trailing_text: "",
+        });
+        cursor = matchIndex + sentenceText.length;
+      });
+
+      if (flow.length > 0 && canAppendTail) {
+        flow[flow.length - 1] = {
+          ...flow[flow.length - 1],
+          trailing_text: sourceText.slice(cursor),
+        };
+      }
+
+      return flow;
+    }
+
+    function formatSentenceText(text) {
+      return String(text || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/[ \t]*\n+[ \t]*/g, "\n")
+        .replace(/[ \t]{2,}/g, " ")
+        .trim();
+    }
+
+    function renderSentenceSeparator(separatorText, keyPrefix) {
+      const normalized = String(separatorText || "").replace(/\r\n/g, "\n");
+      const newlineCount = (normalized.match(/\n/g) || []).length;
+
+      if (newlineCount > 0) {
+        const breakCount = Math.min(newlineCount, 2);
+        return Array.from({ length: breakCount }, (_, index) => <br key={`${keyPrefix}-br-${index}`} />);
+      }
+
+      return /\s/.test(normalized) ? " " : null;
+    }
+
+    function formatPositions(positions) {
+      if (!positions || positions.length === 0) {
+        return "—";
+      }
+      return positions.join(", ");
+    }
+
+    function App() {
+      const [session, setSession] = useState(null);
+      const [items, setItems] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [itemLoading, setItemLoading] = useState(false);
+      const [currentItemId, setCurrentItemId] = useState(null);
+      const [currentItem, setCurrentItem] = useState(null);
+      const [draftMistakes, setDraftMistakes] = useState([]);
+      const [draftStatus, setDraftStatus] = useState("pending");
+      const [formState, setFormState] = useState(createEmptyForm());
+      const [editingMistakeId, setEditingMistakeId] = useState(null);
+      const [selectedSentenceIds, setSelectedSentenceIds] = useState([]);
+      const [searchQuery, setSearchQuery] = useState("");
+      const [statusFilter, setStatusFilter] = useState("all");
+      const [saving, setSaving] = useState(false);
+      const [exporting, setExporting] = useState(false);
+      const [flashMessage, setFlashMessage] = useState("");
+      const [errorMessage, setErrorMessage] = useState("");
+      const [lastSavedSignature, setLastSavedSignature] = useState("");
+
+      const dirty = useMemo(
+        () => serializeDraft(draftMistakes, draftStatus) !== lastSavedSignature,
+        [draftMistakes, draftStatus, lastSavedSignature]
+      );
+
+      useEffect(() => {
+        let isCancelled = false;
+
+        async function bootstrap() {
+          setLoading(true);
+          setErrorMessage("");
+          try {
+            const [sessionPayload, itemsPayload] = await Promise.all([
+              readJson("/session"),
+              readJson("/items"),
+            ]);
+            if (isCancelled) {
+              return;
+            }
+
+            const loadedItems = Array.isArray(itemsPayload && itemsPayload.items) ? itemsPayload.items : [];
+            setSession(sessionPayload);
+            setItems(loadedItems);
+
+            const rememberedItemId = window.localStorage.getItem("judge-bench-annotator-current-item");
+            const rememberedExists = loadedItems.some((item) => item.item_id === rememberedItemId);
+            const firstPending = loadedItems.find((item) => item.annotation_status === "pending");
+            const firstItem = loadedItems[0] || null;
+            const initialItemId = rememberedExists
+              ? rememberedItemId
+              : firstPending
+              ? firstPending.item_id
+              : firstItem
+              ? firstItem.item_id
+              : null;
+
+            setCurrentItemId(initialItemId);
+          } catch (error) {
+            if (!isCancelled) {
+              setErrorMessage(error.message || "Не удалось загрузить данные annotator-а");
+            }
+          } finally {
+            if (!isCancelled) {
+              setLoading(false);
+            }
+          }
+        }
+
+        bootstrap();
+
+        return () => {
+          isCancelled = true;
+        };
+      }, []);
+
+      useEffect(() => {
+        if (!currentItemId) {
+          setCurrentItem(null);
+          setDraftMistakes([]);
+          setDraftStatus("pending");
+          setLastSavedSignature(serializeDraft([], "pending"));
+          return;
+        }
+
+        let isCancelled = false;
+
+        async function loadItem() {
+          setItemLoading(true);
+          setErrorMessage("");
+          try {
+            const item = await readJson(`/items/${encodeURIComponent(currentItemId)}`);
+            if (isCancelled) {
+              return;
+            }
+
+            const mistakes = sortMistakes(deepCopy((item.gold_annotation && item.gold_annotation.mistakes) || []));
+            const status = item.annotation_status || "pending";
+            const signature = serializeDraft(mistakes, status);
+
+            setCurrentItem(item);
+            setDraftMistakes(mistakes);
+            setDraftStatus(status);
+            setFormState(createEmptyForm());
+            setEditingMistakeId(null);
+            setSelectedSentenceIds([]);
+            setLastSavedSignature(signature);
+            window.localStorage.setItem("judge-bench-annotator-current-item", currentItemId);
+          } catch (error) {
+            if (!isCancelled) {
+              setErrorMessage(error.message || "Не удалось загрузить сэмпл");
+            }
+          } finally {
+            if (!isCancelled) {
+              setItemLoading(false);
+            }
+          }
+        }
+
+        loadItem();
+
+        return () => {
+          isCancelled = true;
+        };
+      }, [currentItemId]);
+
+      useEffect(() => {
+        if (!flashMessage) {
+          return undefined;
+        }
+
+        const timeoutId = window.setTimeout(() => {
+          setFlashMessage("");
+        }, 2600);
+
+        return () => window.clearTimeout(timeoutId);
+      }, [flashMessage]);
+
+      const filteredItems = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+        return items.filter((item) => {
+          if (statusFilter !== "all" && item.annotation_status !== statusFilter) {
+            return false;
+          }
+
+          if (!query) {
+            return true;
+          }
+
+          const haystack = [
+            item.prompt_preview,
+            item.answer_preview,
+            item.model_display_name,
+            item.prompt_id,
+          ]
+            .join(" ")
+            .toLowerCase();
+          return haystack.includes(query);
+        });
+      }, [items, searchQuery, statusFilter]);
+
+      const displayedMistakes = draftMistakes;
+
+      const sentenceState = useMemo(() => {
+        if (!currentItem) {
+          return {};
+        }
+        return buildSentenceState(currentItem.sentences || [], displayedMistakes);
+      }, [currentItem, displayedMistakes]);
+
+      const renderedSentences = useMemo(() => {
+        if (!currentItem) {
+          return [];
+        }
+        return buildSentenceFlow(currentItem.answer, currentItem.sentences || []);
+      }, [currentItem]);
+
+      const selectedSentenceSet = useMemo(() => new Set(selectedSentenceIds), [selectedSentenceIds]);
+
+      const sessionMistakeTypes = useMemo(() => {
+        if (!session || !Array.isArray(session.mistake_types)) {
+          return [];
+        }
+        return session.mistake_types;
+      }, [session]);
+
+      function requestNavigate(nextItemId) {
+        if (!nextItemId || nextItemId === currentItemId) {
+          return;
+        }
+
+        if (dirty) {
+          const confirmed = window.confirm("Есть несохраненные правки. Перейти без сохранения?");
+          if (!confirmed) {
+            return;
+          }
+        }
+
+        setCurrentItemId(nextItemId);
+      }
+
+      function updateCurrentItemSummary(nextItem) {
+        const nextSummary = buildSummaryFromItem(nextItem);
+        setItems((prevItems) => prevItems.map((item) => (item.item_id === nextSummary.item_id ? nextSummary : item)));
+      }
+
+      function beginMistakeEdit(mistake) {
+        setEditingMistakeId(mistake.id);
+        setSelectedSentenceIds([...(mistake.position || [])]);
+        setFormState({
+          id: mistake.id,
+          level: Number(mistake.level || 2),
+          type: mistake.type || "other",
+          explanation: mistake.explanation || "",
+        });
+      }
+
+      function useJudgeMistakeAsDraft(mistake) {
+        setEditingMistakeId(null);
+        setSelectedSentenceIds([...(mistake.position || [])]);
+        setFormState({
+          id: null,
+          level: Number(mistake.level || 2),
+          type: mistake.type || "other",
+          explanation: mistake.explanation || "",
+        });
+      }
+
+      function resetEditor() {
+        setEditingMistakeId(null);
+        setFormState(createEmptyForm());
+        setSelectedSentenceIds([]);
+        setErrorMessage("");
+      }
+
+      function toggleSentence(sentenceId) {
+        setSelectedSentenceIds((prevIds) => {
+          if (prevIds.includes(sentenceId)) {
+            return prevIds.filter((value) => value !== sentenceId);
+          }
+          return [...prevIds, sentenceId].sort((left, right) => left - right);
+        });
+      }
+
+      function applyDraftMistake() {
+        if (selectedSentenceIds.length === 0) {
+          setErrorMessage("Сначала выбери хотя бы одно предложение в ответе.");
+          return;
+        }
+
+        const trimmedType = String(formState.type || "").trim();
+        const trimmedExplanation = String(formState.explanation || "").trim();
+        if (!trimmedType) {
+          setErrorMessage("У ошибки должен быть заполнен type.");
+          return;
+        }
+        if (!trimmedExplanation) {
+          setErrorMessage("Добавь комментарий к ошибке.");
+          return;
+        }
+
+        const nextMistake = {
+          id: editingMistakeId || `draft-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          position: [...selectedSentenceIds].sort((left, right) => left - right),
+          level: Number(formState.level),
+          type: trimmedType,
+          explanation: trimmedExplanation,
+        };
+
+        const nextMistakes = editingMistakeId
+          ? draftMistakes.map((mistake) => (mistake.id === editingMistakeId ? nextMistake : mistake))
+          : [...draftMistakes, nextMistake];
+
+        setDraftMistakes(sortMistakes(nextMistakes));
+        setErrorMessage("");
+        setFlashMessage(editingMistakeId ? "Ошибка обновлена локально" : "Ошибка добавлена локально");
+        resetEditor();
+      }
+
+      function removeDraftMistake(mistakeId) {
+        const confirmed = window.confirm("Удалить эту ошибку из финальной разметки?");
+        if (!confirmed) {
+          return;
+        }
+
+        setDraftMistakes((prevMistakes) => prevMistakes.filter((mistake) => mistake.id !== mistakeId));
+        if (editingMistakeId === mistakeId) {
+          resetEditor();
+        }
+        setFlashMessage("Ошибка удалена локально");
+      }
+
+      function selectAllSentences() {
+        if (!currentItem || !Array.isArray(currentItem.sentences)) {
+          return;
+        }
+        setSelectedSentenceIds(currentItem.sentences.map((sentence) => sentence.id));
+      }
+
+      function resetGoldToJudge() {
+        if (!currentItem) {
+          return;
+        }
+
+        const confirmed = window.confirm("Сбросить финальную разметку к исходной оценке judge?");
+        if (!confirmed) {
+          return;
+        }
+
+        const nextMistakes = sortMistakes(deepCopy((currentItem.judge_prediction && currentItem.judge_prediction.mistakes) || []));
+        setDraftMistakes(nextMistakes);
+        setFlashMessage("Финальная разметка сброшена к judge");
+        resetEditor();
+      }
+
+      const saveCurrentItem = useCallback(async function saveCurrentItem() {
+        if (!currentItemId || !currentItem) {
+          return false;
+        }
+
+        if (!dirty) {
+          setFlashMessage("Изменений нет, файл уже синхронизирован");
+          return true;
+        }
+
+        setSaving(true);
+        setErrorMessage("");
+        try {
+          const response = await readJson(`/items/${encodeURIComponent(currentItemId)}`, {
+            method: "PUT",
+            body: JSON.stringify({
+              gold_annotation: {
+                mistakes: sortMistakes(draftMistakes),
+              },
+              annotation_status: draftStatus,
+            }),
+          });
+
+          const savedItem = response.item;
+          const nextMistakes = sortMistakes(deepCopy((savedItem.gold_annotation && savedItem.gold_annotation.mistakes) || []));
+          const nextSignature = serializeDraft(nextMistakes, savedItem.annotation_status || "pending");
+
+          setCurrentItem(savedItem);
+          setDraftMistakes(nextMistakes);
+          setDraftStatus(savedItem.annotation_status || "pending");
+          setLastSavedSignature(nextSignature);
+          setSession(response.session);
+          updateCurrentItemSummary(savedItem);
+          setFlashMessage("Сэмпл сохранен в JSON");
+          return true;
+        } catch (error) {
+          setErrorMessage(error.message || "Не удалось сохранить сэмпл");
+          return false;
+        } finally {
+          setSaving(false);
+        }
+      }, [currentItem, currentItemId, dirty, draftMistakes, draftStatus]);
+
+      useEffect(() => {
+        function handleSaveShortcut(event) {
+          const savePressed = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s";
+          if (!savePressed) {
+            return;
+          }
+
+          event.preventDefault();
+          if (!saving && currentItemId) {
+            saveCurrentItem();
+          }
+        }
+
+        window.addEventListener("keydown", handleSaveShortcut);
+        return () => window.removeEventListener("keydown", handleSaveShortcut);
+      }, [currentItemId, saveCurrentItem, saving]);
+
+      async function exportNow() {
+        if (dirty) {
+          const saved = await saveCurrentItem();
+          if (!saved) {
+            return;
+          }
+        }
+
+        setExporting(true);
+        setErrorMessage("");
+        try {
+          const response = await readJson("/export", { method: "POST" });
+          setSession((prevSession) => ({
+            ...(prevSession || {}),
+            ...(response.summary || {}),
+          }));
+          setFlashMessage("Выходной JSON синхронизирован с диском");
+        } catch (error) {
+          setErrorMessage(error.message || "Не удалось экспортировать JSON");
+        } finally {
+          setExporting(false);
+        }
+      }
+
+      function jumpToNextPending() {
+        if (!items.length) {
+          return;
+        }
+
+        const currentIndex = items.findIndex((item) => item.item_id === currentItemId);
+        const tail = currentIndex >= 0 ? items.slice(currentIndex + 1) : items;
+        const nextPending = tail.find((item) => item.annotation_status === "pending") || items.find((item) => item.annotation_status === "pending");
+        if (nextPending) {
+          requestNavigate(nextPending.item_id);
+        }
+      }
+
+      if (loading) {
+        return (
+          <div className="loading-state">
+            <div>
+              <strong>Подготавливаю annotator…</strong>
+              <div>Загружаю и фильтрую `prompt_results.json`, потом подниму UI.</div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="app-shell">
+          <div className="topbar">
+            <div>
+              <div className="eyebrow">Judge Bench · React via CDN</div>
+              <h1>Аннотатор для оценки judge на v2</h1>
+              <p className="subtitle">
+                Интерфейс режет raw `prompt_results.json` на отдельные сэмплы `1 prompt + 1 answer`,
+                показывает исходную разметку judge и дает руками добавить, удалить или отредактировать ошибки
+                по нескольким предложениям сразу.
+              </p>
+            </div>
+
+            <div className="status-grid">
+              <div className="status-card total">
+                <div className="status-label">Всего сэмплов</div>
+                <div className="status-value mono">{session ? session.total_items : 0}</div>
+              </div>
+              <div className="status-card done">
+                <div className="status-label">Готово</div>
+                <div className="status-value mono">{session ? session.done_items : 0}</div>
+              </div>
+              <div className="status-card pending">
+                <div className="status-label">Осталось</div>
+                <div className="status-value mono">{session ? session.pending_items : 0}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="path-bar">
+            <div className="path-card">
+              <strong>Input</strong>
+              <code>{session ? session.input_file : "—"}</code>
+            </div>
+            <div className="path-card">
+              <strong>Output</strong>
+              <code>{session ? session.output_file : "—"}</code>
+            </div>
+          </div>
+
+          {flashMessage ? <div className="flash">{flashMessage}</div> : null}
+          {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
+
+          <div className="workspace">
+            <aside className="panel sidebar">
+              <div className="sidebar-header">
+                <h2>Сэмплы</h2>
+                <p>Поиск по prompt, answer preview и имени модели. Список уже отфильтрован по `avg_total &gt; 2` и `tokens &gt; 1000`.</p>
+              </div>
+
+              <div className="search-block">
+                <input
+                  className="search-input"
+                  type="search"
+                  placeholder="Искать по промпту, ответу или модели"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                />
+
+                <div className="chip-row">
+                  {[
+                    { value: "all", label: "Все" },
+                    { value: "pending", label: "Pending" },
+                    { value: "done", label: "Done" },
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`filter-chip ${statusFilter === option.value ? "is-active" : ""}`}
+                      onClick={() => setStatusFilter(option.value)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="sidebar-list">
+                {filteredItems.length === 0 ? (
+                  <div className="empty-state">Ничего не найдено по текущим фильтрам.</div>
+                ) : (
+                  filteredItems.map((item) => (
+                    <button
+                      key={item.item_id}
+                      type="button"
+                      className={`sidebar-item ${currentItemId === item.item_id ? "is-active" : ""}`}
+                      onClick={() => requestNavigate(item.item_id)}
+                    >
+                      <div className="sidebar-item__top">
+                        <div className="sidebar-item__title">{item.model_display_name}</div>
+                        <span className={`status-pill ${item.annotation_status}`}>{item.annotation_status}</span>
+                      </div>
+                      <div className="sidebar-item__preview">{item.prompt_preview}</div>
+                      <div className="sidebar-item__footer">
+                        <span className="mono">J {item.judge_total_mistakes} · G {item.gold_total_mistakes}</span>
+                        <span className="mono">{item.tokens} tok</span>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </aside>
+
+            <main className="panel main-panel">
+              <div className="main-header">
+                <h2>{currentItem ? (currentItem.model && currentItem.model.display_name) || "Сэмпл" : "Сэмпл не выбран"}</h2>
+                <p>
+                  {currentItem
+                    ? `ID: ${currentItem.item_id} · prompt_id: ${currentItem.prompt_id}`
+                    : "Выбери сэмпл в боковой панели, чтобы начать разметку."}
+                </p>
+              </div>
+
+              <div className="main-actions">
+                <div className="button-row">
+                  <button type="button" className="btn btn-primary" onClick={saveCurrentItem} disabled={!currentItem || saving}>
+                    {saving ? "Сохраняю…" : dirty ? "Сохранить сэмпл" : "Сэмпл сохранен"}
+                  </button>
+                  <button type="button" className="btn btn-secondary" onClick={exportNow} disabled={!session || exporting}>
+                    {exporting ? "Экспортирую…" : "Синхронизировать JSON"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-warning"
+                    onClick={() => setDraftStatus((prevStatus) => (prevStatus === "done" ? "pending" : "done"))}
+                    disabled={!currentItem}
+                  >
+                    {draftStatus === "done" ? "Вернуть в pending" : "Отметить done"}
+                  </button>
+                </div>
+
+                <div className="button-row">
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    disabled={!currentItem || !currentItem.previous_item_id}
+                    onClick={() => requestNavigate(currentItem && currentItem.previous_item_id)}
+                  >
+                    Предыдущий
+                  </button>
+                  <button type="button" className="btn btn-ghost" disabled={!session || !session.next_pending_item_id} onClick={jumpToNextPending}>
+                    Следующий pending
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    disabled={!currentItem || !currentItem.next_item_id}
+                    onClick={() => requestNavigate(currentItem && currentItem.next_item_id)}
+                  >
+                    Следующий
+                  </button>
+                </div>
+              </div>
+
+              <div className="prompt-card">
+                <div className="card-label">Prompt</div>
+                <div className="prompt-text">{currentItem ? currentItem.prompt_text : ""}</div>
+              </div>
+
+              <div className="meta-card">
+                <div className="pill-row">
+                  <span className="meta-pill mono">{currentItem ? currentItem.tokens : 0} tok</span>
+                  <span className={`status-pill ${draftStatus}`}>{draftStatus}</span>
+                  <span className="meta-pill">Judge: {currentItem ? countTotal(currentItem.judge_prediction && currentItem.judge_prediction.mistakes_count) : 0}</span>
+                  <span className="meta-pill">Gold: {draftMistakes.length}</span>
+                  {dirty ? <span className="meta-pill">Есть несохраненные правки</span> : <span className="meta-pill">Все изменения на диске</span>}
+                </div>
+
+                <div className="pill-row">
+                  <span className="meta-pill mono">{currentItem && currentItem.model && currentItem.model.model ? currentItem.model.model : "—"}</span>
+                  <span className="meta-pill">{currentItem && currentItem.model && currentItem.model.transport ? currentItem.model.transport : "transport неизвестен"}</span>
+                  {currentItem && currentItem.model && currentItem.model.base_url ? <span className="meta-pill mono">{currentItem.model.base_url}</span> : null}
+                </div>
+              </div>
+
+              <div className="answer-panel">
+                <div className="answer-toolbar">
+                  <div className="answer-toolbar__left">
+                    <div className="card-label">Ответ, разбитый на предложения</div>
+                  </div>
+
+                  <div className="answer-toolbar__right">
+                    <button type="button" className="btn btn-ghost" disabled={!currentItem} onClick={selectAllSentences}>
+                      Выбрать весь ответ
+                    </button>
+                    <button type="button" className="btn btn-ghost" disabled={selectedSentenceIds.length === 0} onClick={() => setSelectedSentenceIds([])}>
+                      Снять выбор
+                    </button>
+                  </div>
+                </div>
+
+                <div className="sentence-grid">
+                  {itemLoading ? (
+                    <div className="empty-state">Загружаю выбранный сэмпл…</div>
+                  ) : currentItem && currentItem.sentences && currentItem.sentences.length ? (
+                    <div className="sentence-flow">
+                      {renderedSentences.map((sentence) => {
+                        const sentenceMeta = sentenceState[sentence.id] || { maxLevel: 0, count: 0, types: [] };
+                        const isSelected = selectedSentenceSet.has(sentence.id);
+                        const hasFocusedSelection = selectedSentenceIds.length > 0;
+                        const isMuted = hasFocusedSelection && !isSelected;
+
+                        return (
+                          <React.Fragment key={sentence.id}>
+                            {renderSentenceSeparator(sentence.leading_text, `leading-${sentence.id}`)}
+                            <button
+                              type="button"
+                              className={`sentence-inline ${sentenceMeta.maxLevel ? `level-${sentenceMeta.maxLevel}` : ""} ${isSelected ? "is-selected" : ""} ${isMuted ? "is-muted" : ""}`}
+                              onClick={() => toggleSentence(sentence.id)}
+                              title={sentenceMeta.count > 0 ? `Предложение #${sentence.id} · Ошибок: ${sentenceMeta.count}` : `Предложение #${sentence.id} · Ошибок нет`}
+                            >
+                              <span className="sentence-inline__inner">
+                                <span className="sentence-inline__text">{formatSentenceText(sentence.text)}</span>
+                              </span>
+                            </button>
+                            {renderSentenceSeparator(sentence.trailing_text, `trailing-${sentence.id}`)}
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="empty-state">Нет предложений для отображения.</div>
+                  )}
+                </div>
+              </div>
+            </main>
+
+            <aside className="panel inspector">
+              <div className="inspector-header">
+                <h2>Ошибки и редактор</h2>
+                <p>Judge остается read-only, а финальная разметка сохраняется в JSON и будет использована как gold.</p>
+              </div>
+
+              <div className="inspector-scroll">
+                <section className="section-card">
+                  <div className="section-card__head">
+                    <div className="section-card__title">Редактор финальной ошибки</div>
+                    <span className={`status-pill ${draftStatus}`}>{draftStatus}</span>
+                  </div>
+                  <div className="section-card__body">
+                    <div className="selection-note">
+                      {selectedSentenceIds.length > 0
+                        ? `Выбраны предложения: ${selectedSentenceIds.join(", ")}`
+                        : "Выбери предложения в ответе, затем заполни поля ошибки."}
+                    </div>
+
+                    <div className="field-grid">
+                      <div className="field-row">
+                        <label htmlFor="mistake-level">Уровень</label>
+                        <select
+                          id="mistake-level"
+                          className="field-select"
+                          value={formState.level}
+                          onChange={(event) => setFormState((prevState) => ({ ...prevState, level: Number(event.target.value) }))}
+                        >
+                          <option value={1}>L1 — незначительная</option>
+                          <option value={2}>L2 — обычная</option>
+                          <option value={3}>L3 — критическая</option>
+                        </select>
+                      </div>
+
+                      <div className="field-row">
+                        <label htmlFor="mistake-type">Type</label>
+                        <input
+                          id="mistake-type"
+                          className="field-input mono"
+                          list="mistake-type-options"
+                          value={formState.type}
+                          onChange={(event) => setFormState((prevState) => ({ ...prevState, type: event.target.value }))}
+                        />
+                        <datalist id="mistake-type-options">
+                          {sessionMistakeTypes.map((typeName) => (
+                            <option key={typeName} value={typeName} />
+                          ))}
+                        </datalist>
+                      </div>
+
+                      <div className="field-row">
+                        <label htmlFor="mistake-comment">Комментарий</label>
+                        <textarea
+                          id="mistake-comment"
+                          className="field-textarea"
+                          value={formState.explanation}
+                          onChange={(event) => setFormState((prevState) => ({ ...prevState, explanation: event.target.value }))}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="button-row">
+                      <button type="button" className="btn btn-primary" onClick={applyDraftMistake}>
+                        {editingMistakeId ? "Применить правки" : "Добавить ошибку"}
+                      </button>
+                      <button type="button" className="btn btn-ghost" onClick={resetEditor}>
+                        Очистить форму
+                      </button>
+                      <button type="button" className="btn btn-ghost" onClick={resetGoldToJudge} disabled={!currentItem}>
+                        Сбросить к judge
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="section-card">
+                  <div className="section-card__head">
+                    <div className="section-card__title">Judge</div>
+                    <span className="meta-pill">{currentItem ? countTotal(currentItem.judge_prediction && currentItem.judge_prediction.mistakes_count) : 0} ошибок</span>
+                  </div>
+                  <div className="section-card__body">
+                    {currentItem && currentItem.judge_prediction && currentItem.judge_prediction.mistakes.length ? (
+                      currentItem.judge_prediction.mistakes.map((mistake) => (
+                        <div key={mistake.id} className={`mistake-card level-${mistake.level} ${selectedSentenceIds.join(",") === (mistake.position || []).join(",") ? "is-focused" : ""}`}>
+                          <div className="mistake-card__row">
+                            <div className="mistake-title">
+                              <span className={`level-pill level-${mistake.level}`}>{LEVEL_META[mistake.level].label}</span>
+                              <span className="mistake-type mono">{mistake.type}</span>
+                            </div>
+                            <span className="mistake-positions">#{formatPositions(mistake.position)}</span>
+                          </div>
+                          <div className="mistake-text">{mistake.explanation}</div>
+                          <div className="mistake-actions">
+                            <button
+                              type="button"
+                              className="mini-btn"
+                              onClick={() => {
+                                setSelectedSentenceIds([...(mistake.position || [])]);
+                              }}
+                            >
+                              Показать в тексте
+                            </button>
+                            <button type="button" className="mini-btn warning" onClick={() => useJudgeMistakeAsDraft(mistake)}>
+                              Взять в редактор
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="empty-state">Judge не нашел ошибок в этом ответе.</div>
+                    )}
+                  </div>
+                </section>
+
+                <section className="section-card">
+                  <div className="section-card__head">
+                    <div className="section-card__title">Финальная разметка</div>
+                    <span className="meta-pill">{draftMistakes.length} ошибок</span>
+                  </div>
+                  <div className="section-card__body">
+                    {draftMistakes.length ? (
+                      draftMistakes.map((mistake) => (
+                        <div key={mistake.id} className={`mistake-card level-${mistake.level} ${selectedSentenceIds.join(",") === (mistake.position || []).join(",") ? "is-focused" : ""}`}>
+                          <div className="mistake-card__row">
+                            <div className="mistake-title">
+                              <span className={`level-pill level-${mistake.level}`}>{LEVEL_META[mistake.level].label}</span>
+                              <span className="mistake-type mono">{mistake.type}</span>
+                            </div>
+                            <span className="mistake-positions">#{formatPositions(mistake.position)}</span>
+                          </div>
+                          <div className="mistake-text">{mistake.explanation}</div>
+                          <div className="mistake-actions">
+                            <button
+                              type="button"
+                              className="mini-btn"
+                              onClick={() => {
+                                setSelectedSentenceIds([...(mistake.position || [])]);
+                              }}
+                            >
+                              Показать в тексте
+                            </button>
+                            <button type="button" className="mini-btn warning" onClick={() => beginMistakeEdit(mistake)}>
+                              Редактировать
+                            </button>
+                            <button type="button" className="mini-btn danger" onClick={() => removeDraftMistake(mistake.id)}>
+                              Удалить
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="empty-state">Финальная разметка пока пуста.</div>
+                    )}
+                  </div>
+                </section>
+              </div>
+            </aside>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>

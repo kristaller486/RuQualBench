@@ -29,15 +29,42 @@ for logger_name in ['litellm', 'LiteLLM']:
     litellm_logger.setLevel(logging.WARNING)
     litellm_logger.propagate = False
 
-def find_existing_runs(timestamp: str, dataset: str) -> tuple:
+def get_dataset_log_name(dataset: str) -> str:
+    dataset_path = Path(dataset)
+    if dataset_path.suffix.lower() == ".json":
+        return dataset_path.stem
+    return dataset
+
+
+def find_existing_runs(timestamp: str, logs_dir: Path, dataset: str | None = None) -> tuple:
     """Находит существующие прогоны с указанным timestamp"""
-    logs_dir = Path("logs")
-    pattern = f"benchmark_{timestamp}_run_*_{dataset}.json"
+    dataset_log_name = get_dataset_log_name(dataset) if dataset is not None else None
+    pattern = f"benchmark_{timestamp}_run_*_{dataset_log_name}.json" if dataset_log_name else f"benchmark_{timestamp}_run_*.json"
     
     existing_files = list(logs_dir.glob(pattern))
     
     if not existing_files:
-        raise ValueError(f"Не найдено логов с timestamp {timestamp} и dataset {dataset}")
+        if dataset_log_name:
+            raise ValueError(f"Не найдено логов с timestamp {timestamp} и dataset {dataset_log_name}")
+        raise ValueError(f"Не найдено логов с timestamp {timestamp}")
+
+    if dataset_log_name is None:
+        detected_datasets = set()
+        for file in existing_files:
+            match = re.match(rf"benchmark_{re.escape(timestamp)}_run_\d+_(.+)\.json$", file.name)
+            if match:
+                detected_datasets.add(match.group(1))
+
+        if not detected_datasets:
+            raise ValueError(f"Не удалось определить датасет для timestamp {timestamp}")
+
+        if len(detected_datasets) > 1:
+            datasets_str = ", ".join(sorted(detected_datasets))
+            raise ValueError(
+                f"Для timestamp {timestamp} найдено несколько датасетов: {datasets_str}. Укажите dataset явно."
+            )
+
+        dataset_log_name = detected_datasets.pop()
     
     # Извлекаем номера run
     run_numbers = []
@@ -52,7 +79,7 @@ def find_existing_runs(timestamp: str, dataset: str) -> tuple:
     max_run = max(run_numbers)
     
     # Читаем config и results из первого прогона
-    first_run_file = logs_dir / f"benchmark_{timestamp}_run_1_{dataset}.json"
+    first_run_file = logs_dir / f"benchmark_{timestamp}_run_1_{dataset_log_name}.json"
     with open(first_run_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
         config = data.get("config", {})
@@ -74,13 +101,6 @@ def main():
 
     # Общие аргументы
     for p in [parser_v1, parser_v2]:
-        p.add_argument(
-            "--dataset",
-            type=str,
-            default="lite",
-            choices=["debug", "lite", "base", "large"],
-            help="Выбор датасета (по умолчанию: lite)"
-        )
         p.add_argument(
             "--model",
             type=str,
@@ -110,6 +130,13 @@ def main():
 
     # Аргументы только для v1
     parser_v1.add_argument(
+        "--dataset",
+        type=str,
+        default="lite",
+        choices=["debug", "lite", "base", "large"],
+        help="Выбор датасета (по умолчанию: lite)"
+    )
+    parser_v1.add_argument(
         "--continue",
         type=str,
         dest="continue_timestamp",
@@ -122,6 +149,23 @@ def main():
     )
 
     # Аргументы только для v2
+    parser_v2.add_argument(
+        "--dataset-path",
+        type=str,
+        default="v2_lite.json",
+        help="Путь к JSON файлу датасета (по умолчанию: v2_lite.json)"
+    )
+    parser_v2.add_argument(
+        "--continue",
+        type=str,
+        dest="continue_timestamp",
+        help="Продолжить существующую серию прогонов (указать timestamp, например: 2025-10-17_15-17-05)"
+    )
+    parser_v2.add_argument(
+        "--no-regenerate",
+        action="store_true",
+        help="Генерировать ответы от модели только один раз, оценивать судьей N раз (работает с -n)"
+    )
     parser_v2.add_argument(
         "--debug-logs",
         type=int,
@@ -136,6 +180,8 @@ def main():
         # Вставляем 'v1' первым аргументом
         sys.argv.insert(1, "v1")
 
+    dataset_path_explicitly_set = "--dataset-path" in sys.argv
+
     args = parser.parse_args()
     
     extra_body = None
@@ -143,19 +189,99 @@ def main():
         extra_body = json.loads(args.extra_body)
     
     if args.command == "v2":
-        benchmark = BenchmarkV2(
-            dataset_name=args.dataset,
-            model_name=args.model,
-            judge_model_name=args.judge_model,
-            extra_body=extra_body,
-            verbose_name=args.verbose_name,
-            debug_logs=args.debug_logs
-        )
-        asyncio.run(benchmark.run_multiple_benchmarks(args.num_runs))
+        if args.continue_timestamp:
+            max_run, existing_config, existing_results = find_existing_runs(
+                args.continue_timestamp,
+                Path("logs_v2")
+            )
+
+            dataset_path = existing_config.get("dataset", args.dataset_path)
+            if dataset_path_explicitly_set and args.dataset_path != dataset_path:
+                logger.warning(
+                    "ВНИМАНИЕ: --dataset-path=%s отличается от датасета продолжаемой серии (%s)",
+                    args.dataset_path,
+                    dataset_path,
+                )
+                logger.warning("Будет использован датасет из исходной серии")
+
+            verbose_name = args.verbose_name or existing_config.get("verbose_name")
+            existing_no_regenerate = existing_config.get("no_regenerate", False)
+
+            if args.no_regenerate and not existing_no_regenerate:
+                logger.warning("ВНИМАНИЕ: --no-regenerate указан, но исходная серия запускалась без этого флага")
+                logger.warning("Будет использован режим --no-regenerate с ответами из run_1 исходной серии")
+                use_no_regenerate = True
+            elif existing_no_regenerate:
+                logger.info("Исходная серия использовала --no-regenerate, продолжаем в том же режиме")
+                use_no_regenerate = True
+            else:
+                use_no_regenerate = False
+
+            answer_results = None
+            if use_no_regenerate and existing_results:
+                answer_results = [
+                    {
+                        "dialog_id": r["dialog_id"],
+                        "dialog": r["dialog"],
+                        "answer": r["answer"],
+                        "tokens": r["tokens"],
+                        "error": r["error"]
+                    }
+                    for r in existing_results
+                ]
+
+            benchmark = BenchmarkV2(
+                dataset_path=dataset_path,
+                model_name=args.model,
+                judge_model_name=args.judge_model,
+                extra_body=extra_body,
+                verbose_name=verbose_name,
+                debug_logs=args.debug_logs
+            )
+
+            previous_model = existing_config.get("model")
+            previous_judge_model = existing_config.get("judge_model")
+            if previous_model and benchmark.model_name != previous_model:
+                logger.warning(
+                    "Тестируемая модель отличается от исходной серии: было %s, сейчас %s",
+                    previous_model,
+                    benchmark.model_name,
+                )
+            if previous_judge_model and benchmark.judge_model_name != previous_judge_model:
+                logger.warning(
+                    "Модель-оценщик отличается от исходной серии: было %s, сейчас %s",
+                    previous_judge_model,
+                    benchmark.judge_model_name,
+                )
+
+            asyncio.run(benchmark.run_multiple_benchmarks(
+                num_runs=args.num_runs,
+                continue_timestamp=args.continue_timestamp,
+                start_run_number=max_run,
+                no_regenerate=use_no_regenerate,
+                existing_answer_results=answer_results
+            ))
+        else:
+            benchmark = BenchmarkV2(
+                dataset_path=args.dataset_path,
+                model_name=args.model,
+                judge_model_name=args.judge_model,
+                extra_body=extra_body,
+                verbose_name=args.verbose_name,
+                debug_logs=args.debug_logs
+            )
+            asyncio.run(benchmark.run_multiple_benchmarks(
+                args.num_runs,
+                no_regenerate=args.no_regenerate
+            ))
     else:
         # Логика v1
         if args.continue_timestamp:
-            max_run, existing_config, existing_results = find_existing_runs(args.continue_timestamp, args.dataset)
+            max_run, existing_config, existing_results = find_existing_runs(
+                args.continue_timestamp,
+                Path("logs"),
+                args.dataset,
+            )
             
             # Берем параметры из существующих логов
             model = existing_config.get("model")
